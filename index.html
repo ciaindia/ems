@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .employee-count {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #56ab2f, #a8e6cf);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .form-control {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .table thead {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .table th, .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .salary {
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state img {
+            width: 200px;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                max-width: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 800px;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+
+        .pagination-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0 0 15px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .page-size-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .page-size-select {
+            padding: 6px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .page-size-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #333;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-ellipsis {
+            padding: 8px 4px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* Card view for mobile */
+        @media (max-width: 576px) {
+            .table-container {
+                background: none;
+                box-shadow: none;
+            }
+
+            .table, .table thead, .table tbody, .table th, .table td, .table tr {
+                display: block;
+            }
+
+            .table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .table tbody tr {
+                background: white;
+                border-radius: 15px;
+                margin-bottom: 1rem;
+                padding: 1rem;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                border: none;
+            }
+
+            .table td {
+                border: none;
+                padding: 0.5rem 0;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+
+            .table td:before {
+                content: attr(data-label) ":";
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-left: 0;
+                font-weight: 600;
+                text-align: left;
+                color: #2c3e50;
+            }
+
+            .actions {
+                justify-content: flex-end;
+                margin-top: 1rem;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .pagination-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .pagination {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Employee Management System</h1>
+            <div class="employee-count">
+                Total Employees: <span id="employeeCount">0</span>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search employees...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <button class="btn btn-primary" onclick="showAddForm()">
+                + Add Employee
+            </button>
+        </div>
+
+        <!-- Employee Form -->
+        <div class="form-container" id="employeeForm">
+            <h3 id="formTitle">Add New Employee</h3>
+            <form id="employeeFormElement" onsubmit="handleSubmit(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="employeeId">Employee ID <span class="required">*</span></label>
+                        <input type="text" id="employeeId" class="form-control" placeholder="EMP001" required>
+                        <div class="error" id="employeeIdError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeName">Full Name <span class="required">*</span></label>
+                        <input type="text" id="employeeName" class="form-control" placeholder="Rajesh Kumar" required>
+                        <div class="error" id="employeeNameError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeManager">Manager</label>
+                        <input type="text" id="employeeManager" class="form-control" placeholder="Priya Sharma">
+                        <div class="error" id="employeeManagerError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeDepartment">Department <span class="required">*</span></label>
+                        <select id="employeeDepartment" class="form-control" required>
+                            <option value="">Select Department</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Operations">Operations</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Sales">Sales</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Legal">Legal</option>
+                            <option value="R&D">R&D</option>
+                        </select>
+                        <div class="error" id="employeeDepartmentError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="employeeSalary">Annual Salary (INR) <span class="required">*</span></label>
+                        <input type="number" id="employeeSalary" class="form-control" placeholder="750000" required min="1">
+                        <div class="error" id="employeeSalaryError"></div>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button type="submit" class="btn btn-success">Save Employee</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Employee Table -->
+        <div class="table-container">
+            <table class="table" id="employeeTable">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Manager</th>
+                        <th>Department</th>
+                        <th>Salary (₹)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                    <!-- Employee rows will be inserted here -->
+                </tbody>
+            </table>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <h3>No employees found</h3>
+                <p>Add your first employee to get started!</p>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container" id="paginationContainer" style="display: none;">
+                <div class="pagination-info" id="paginationInfo">
+                    Showing 1 to 5 of 25 employees
+                </div>
+                <div class="pagination-controls">
+                    <div class="page-size-container">
+                        <label for="pageSize">Show:</label>
+                        <select id="pageSize" class="page-size-select" onchange="changePageSize()">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>per page</span>
+                    </div>
+                    <div class="pagination" id="paginationButtons">
+                        <!-- Pagination buttons will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <h3>Confirm Delete</h3>
+            <p>Are you sure you want to delete this employee? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="confirmDelete()">Yes, Delete</button>
+                <button class="btn btn-secondary" onclick="hideDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Employee Management System JavaScript
+        let employees = [];
+        let filteredEmployees = [];
+        let editingEmployeeId = null;
+        let deleteEmployeeId = null;
+        
+        // Pagination variables
+        let currentPage = 1;
+        let itemsPerPage = 10;
+
+        // Sample data
+        const sampleEmployees = [
+            {
+                employee_id: "EMP001",
+                name: "Rajesh Kumar",
+                manager: "Priya Sharma",
+                department: "IT",
+                salary: 750000
+            },
+            {
+                employee_id: "EMP002",
+                name: "Priya Sharma",
+                manager: "Amit Singh",
+                department: "IT",
+                salary: 1200000
+            },
+            {
+                employee_id: "EMP003",
+                name: "Amit Singh",
+                manager: "Sunita Verma",
+                department: "HR",
+                salary: 850000
+            },
+            {
+                employee_id: "EMP004",
+                name: "Sunita Verma",
+                manager: "",
+                department: "HR",
+                salary: 1500000
+            },
+            {
+                employee_id: "EMP005",
+                name: "Vikash Gupta",
+                manager: "Rajesh Kumar",
+                department: "IT",
+                salary: 650000
+            },
+            {
+                employee_id: "EMP006",
+                name: "Ananya Patel",
+                manager: "Sunita Verma",
+                department: "HR",
+                salary: 720000
+            },
+            {
+                employee_id: "EMP007",
+                name: "Rohit Sharma",
+                manager: "Priya Sharma",
+                department: "IT",
+                salary: 680000
+            },
+            {
+                employee_id: "EMP008",
+                name: "Kavitha Nair",
+                manager: "Amit Singh",
+                department: "Finance",
+                salary: 780000
+            },
+            {
+                employee_id: "EMP009",
+                name: "Arjun Reddy",
+                manager: "Sunita Verma",
+                department: "Marketing",
+                salary: 620000
+            },
+            {
+                employee_id: "EMP010",
+                name: "Deepika Singh",
+                manager: "Priya Sharma",
+                department: "IT",
+                salary: 710000
+            },
+            {
+                employee_id: "EMP011",
+                name: "Manoj Kumar",
+                manager: "Kavitha Nair",
+                department: "Finance",
+                salary: 580000
+            },
+            {
+                employee_id: "EMP012",
+                name: "Riya Agarwal",
+                manager: "Arjun Reddy",
+                department: "Marketing",
+                salary: 540000
+            },
+            {
+                employee_id: "EMP013",
+                name: "Karthik Iyer",
+                manager: "Rajesh Kumar",
+                department: "IT",
+                salary: 690000
+            },
+            {
+                employee_id: "EMP014",
+                name: "Sneha Joshi",
+                manager: "Sunita Verma",
+                department: "HR",
+                salary: 610000
+            },
+            {
+                employee_id: "EMP015",
+                name: "Rahul Mehta",
+                manager: "Kavitha Nair",
+                department: "Finance",
+                salary: 700000
+            }
+        ];
+
+        // Initialize the application
+        function init() {
+            loadEmployees();
+            setupEventListeners();
+            renderEmployees();
+        }
+
+        // Load employees from localStorage or use sample data
+        function loadEmployees() {
+            const stored = localStorage.getItem('employees');
+            if (stored) {
+                employees = JSON.parse(stored);
+            } else {
+                employees = [...sampleEmployees];
+                saveEmployees();
+            }
+            filteredEmployees = [...employees];
+        }
+
+        // Save employees to localStorage
+        function saveEmployees() {
+            localStorage.setItem('employees', JSON.stringify(employees));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Auto-generate employee ID
+            const employeeIdInput = document.getElementById('employeeId');
+            employeeIdInput.addEventListener('focus', function() {
+                if (!this.value && !editingEmployeeId) {
+                    this.value = generateEmployeeId();
+                }
+            });
+        }
+
+        // Generate next employee ID
+        function generateEmployeeId() {
+            if (employees.length === 0) return 'EMP001';
+            
+            const numbers = employees.map(emp => {
+                const match = emp.employee_id.match(/EMP(\d+)/);
+                return match ? parseInt(match[1]) : 0;
+            });
+            
+            const maxNumber = Math.max(...numbers);
+            return `EMP${String(maxNumber + 1).padStart(3, '0')}`;
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm.trim()) {
+                filteredEmployees = [...employees];
+            } else {
+                filteredEmployees = employees.filter(emp => 
+                    emp.employee_id.toLowerCase().includes(searchTerm) ||
+                    emp.name.toLowerCase().includes(searchTerm) ||
+                    emp.manager.toLowerCase().includes(searchTerm) ||
+                    emp.department.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            currentPage = 1; // Reset to first page when searching
+            renderEmployees();
+        }
+
+        // Format currency in Indian format
+        function formatCurrency(amount) {
+            const numStr = amount.toString();
+            let lastThree = numStr.substring(numStr.length - 3);
+            const otherNumbers = numStr.substring(0, numStr.length - 3);
+            
+            if (otherNumbers !== '') {
+                lastThree = ',' + lastThree;
+            }
+            
+            const result = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+            return `₹${result}`;
+        }
+
+        // Show add form
+        function showAddForm() {
+            editingEmployeeId = null;
+            document.getElementById('formTitle').textContent = 'Add New Employee';
+            document.getElementById('employeeFormElement').reset();
+            clearErrors();
+            document.getElementById('employeeForm').classList.add('active');
+            document.getElementById('employeeId').value = generateEmployeeId();
+        }
+
+        // Show edit form
+        function editEmployee(employeeId) {
+            const employee = employees.find(emp => emp.employee_id === employeeId);
+            if (!employee) return;
+
+            editingEmployeeId = employeeId;
+            document.getElementById('formTitle').textContent = 'Edit Employee';
+            
+            document.getElementById('employeeId').value = employee.employee_id;
+            document.getElementById('employeeName').value = employee.name;
+            document.getElementById('employeeManager').value = employee.manager;
+            document.getElementById('employeeDepartment').value = employee.department;
+            document.getElementById('employeeSalary').value = employee.salary;
+            
+            clearErrors();
+            document.getElementById('employeeForm').classList.add('active');
+        }
+
+        // Hide form
+        function hideForm() {
+            document.getElementById('employeeForm').classList.remove('active');
+            editingEmployeeId = null;
+        }
+
+        // Handle form submission
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const employeeData = {
+                employee_id: document.getElementById('employeeId').value.trim(),
+                name: document.getElementById('employeeName').value.trim(),
+                manager: document.getElementById('employeeManager').value.trim(),
+                department: document.getElementById('employeeDepartment').value,
+                salary: parseFloat(document.getElementById('employeeSalary').value)
+            };
+
+            if (validateEmployee(employeeData)) {
+                if (editingEmployeeId) {
+                    updateEmployee(employeeData);
+                } else {
+                    addEmployee(employeeData);
+                }
+            }
+        }
+
+        // Validate employee data
+        function validateEmployee(employeeData) {
+            let isValid = true;
+            clearErrors();
+
+            // Employee ID validation
+            if (!employeeData.employee_id) {
+                showError('employeeIdError', 'Employee ID is required');
+                isValid = false;
+            } else if (!/^EMP\d{3}$/.test(employeeData.employee_id)) {
+                showError('employeeIdError', 'Employee ID must be in format EMP001, EMP002, etc.');
+                isValid = false;
+            } else if (!editingEmployeeId && employees.some(emp => emp.employee_id === employeeData.employee_id)) {
+                showError('employeeIdError', 'Employee ID already exists');
+                isValid = false;
+            }
+
+            // Name validation
+            if (!employeeData.name) {
+                showError('employeeNameError', 'Name is required');
+                isValid = false;
+            } else if (employeeData.name.length < 2) {
+                showError('employeeNameError', 'Name must be at least 2 characters');
+                isValid = false;
+            }
+
+            // Department validation
+            if (!employeeData.department) {
+                showError('employeeDepartmentError', 'Department is required');
+                isValid = false;
+            }
+
+            // Salary validation
+            if (!employeeData.salary || employeeData.salary <= 0) {
+                showError('employeeSalaryError', 'Valid salary is required');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            document.getElementById(elementId).textContent = message;
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error');
+            errorElements.forEach(element => element.textContent = '');
+        }
+
+        // Add new employee
+        function addEmployee(employeeData) {
+            employees.push(employeeData);
+            saveEmployees();
+            hideForm();
+            showAlert('Employee added successfully!', 'success');
+            
+            // Update filtered list and render
+            if (!document.getElementById('searchInput').value.trim()) {
+                filteredEmployees = [...employees];
+            } else {
+                handleSearch(); // Re-run search to update filtered list
+            }
+            renderEmployees();
+        }
+
+        // Update existing employee
+        function updateEmployee(employeeData) {
+            const index = employees.findIndex(emp => emp.employee_id === editingEmployeeId);
+            if (index !== -1) {
+                employees[index] = employeeData;
+                saveEmployees();
+                hideForm();
+                showAlert('Employee updated successfully!', 'success');
+                
+                // Update filtered list and render
+                if (!document.getElementById('searchInput').value.trim()) {
+                    filteredEmployees = [...employees];
+                } else {
+                    handleSearch(); // Re-run search to update filtered list
+                }
+                renderEmployees();
+            }
+        }
+
+        // Show delete confirmation
+        function deleteEmployee(employeeId) {
+            deleteEmployeeId = employeeId;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        // Hide delete modal
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteEmployeeId = null;
+        }
+
+        // Confirm delete
+        function confirmDelete() {
+            if (deleteEmployeeId) {
+                const index = employees.findIndex(emp => emp.employee_id === deleteEmployeeId);
+                if (index !== -1) {
+                    const employeeName = employees[index].name;
+                    employees.splice(index, 1);
+                    saveEmployees();
+                    showAlert(`Employee ${employeeName} deleted successfully!`, 'success');
+                    
+                    // Update filtered list and render
+                    if (!document.getElementById('searchInput').value.trim()) {
+                        filteredEmployees = [...employees];
+                    } else {
+                        handleSearch(); // Re-run search to update filtered list
+                    }
+                    renderEmployees();
+                }
+            }
+            hideDeleteModal();
+        }
+
+        // Show alert message
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // Change page size
+        function changePageSize() {
+            itemsPerPage = parseInt(document.getElementById('pageSize').value);
+            currentPage = 1; // Reset to first page
+            renderEmployees();
+        }
+
+        // Go to specific page
+        function goToPage(page) {
+            currentPage = page;
+            renderEmployees();
+        }
+
+        // Calculate pagination info
+        function getPaginationInfo() {
+            const totalItems = filteredEmployees.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+            
+            return {
+                totalItems,
+                totalPages,
+                startIndex,
+                endIndex,
+                currentPage
+            };
+        }
+
+        // Render pagination buttons
+        function renderPagination() {
+            const paginationInfo = getPaginationInfo();
+            const { totalPages, currentPage, totalItems, startIndex, endIndex } = paginationInfo;
+            
+            // Show/hide pagination container
+            const paginationContainer = document.getElementById('paginationContainer');
+            if (totalItems > itemsPerPage) {
+                paginationContainer.style.display = 'flex';
+            } else {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+            
+            // Update pagination info text
+            const paginationInfoElement = document.getElementById('paginationInfo');
+            paginationInfoElement.textContent = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} employees`;
+            
+            // Generate pagination buttons
+            const paginationButtons = document.getElementById('paginationButtons');
+            paginationButtons.innerHTML = '';
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.textContent = '‹';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => goToPage(currentPage - 1);
+            paginationButtons.appendChild(prevBtn);
+            
+            // Page buttons logic
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // Adjust start page if we're near the end
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // First page and ellipsis if needed
+            if (startPage > 1) {
+                const firstBtn = document.createElement('button');
+                firstBtn.className = 'page-btn';
+                firstBtn.textContent = '1';
+                firstBtn.onclick = () => goToPage(1);
+                paginationButtons.appendChild(firstBtn);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'page-ellipsis';
+                    ellipsis.textContent = '...';
+                    paginationButtons.appendChild(ellipsis);
+                }
+            }
+            
+            // Page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => goToPage(i);
+                paginationButtons.appendChild(pageBtn);
+            }
+            
+            // Last page and ellipsis if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'page-ellipsis';
+                    ellipsis.textContent = '...';
+                    paginationButtons.appendChild(ellipsis);
+                }
+                
+                const lastBtn = document.createElement('button');
+                lastBtn.className = 'page-btn';
+                lastBtn.textContent = totalPages;
+                lastBtn.onclick = () => goToPage(totalPages);
+                paginationButtons.appendChild(lastBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.textContent = '›';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => goToPage(currentPage + 1);
+            paginationButtons.appendChild(nextBtn);
+        }
+
+        // Render employees table
+        function renderEmployees() {
+            const tbody = document.getElementById('employeeTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const employeeCount = document.getElementById('employeeCount');
+            
+            // Update employee count
+            employeeCount.textContent = employees.length;
+            
+            // Calculate pagination
+            const paginationInfo = getPaginationInfo();
+            const { startIndex, endIndex } = paginationInfo;
+            
+            // Get current page data
+            const currentPageData = filteredEmployees.slice(startIndex, endIndex);
+            
+            if (currentPageData.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                document.getElementById('paginationContainer').style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = currentPageData.map(employee => `
+                <tr>
+                    <td data-label="Employee ID">${employee.employee_id}</td>
+                    <td data-label="Name">${employee.name}</td>
+                    <td data-label="Manager">${employee.manager || 'N/A'}</td>
+                    <td data-label="Department">${employee.department}</td>
+                    <td data-label="Salary" class="salary">${formatCurrency(employee.salary)}</td>
+                    <td data-label="Actions" class="actions">
+                        <button class="btn btn-warning btn-sm" onclick="editEmployee('${employee.employee_id}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${employee.employee_id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Render pagination
+            renderPagination();
+        }
+
+        // Initialize the application when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
