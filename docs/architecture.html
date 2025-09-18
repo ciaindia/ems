@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Tier Web Application Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 50px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .architecture {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            padding: 0 30px;
+        }
+
+        .tier {
+            background: white;
+            border-radius: 15px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 3px dashed #e0e6ed;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 450px;
+        }
+
+        .tier:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .tier-1 {
+            border-color: #3498db;
+            background: linear-gradient(145deg, #ebf8ff 0%, #e1f5fe 100%);
+        }
+
+        .tier-2 {
+            border-color: #f39c12;
+            background: linear-gradient(145deg, #fff8e1 0%, #ffecb3 100%);
+        }
+
+        .tier-3 {
+            border-color: #27ae60;
+            background: linear-gradient(145deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+
+        .tier-4 {
+            border-color: #9b59b6;
+            background: linear-gradient(145deg, #f3e5f5 0%, #e1bee7 100%);
+        }
+
+        .tier-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .tier-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .user-icon {
+            margin-bottom: 20px;
+        }
+
+        .user-icon svg {
+            width: 60px;
+            height: 60px;
+            fill: #3498db;
+        }
+
+        .device-icons {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .device-icon {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: #3498db;
+        }
+
+        .device-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.05);
+        }
+
+        .react { background: linear-gradient(45deg, #61dafb, #21a0c4); }
+        .html5 { background: linear-gradient(45deg, #e34f26, #f16529); }
+        .css3 { background: linear-gradient(45deg, #1572b6, #33a9dc); }
+        .js { background: linear-gradient(45deg, #f7df1e, #f0db4f); color: #333; text-shadow: none; }
+        .vanilla-js { background: linear-gradient(45deg, #323330, #f0db4f); }
+
+        .nodejs { background: linear-gradient(45deg, #339933, #68a063); }
+        .express { background: linear-gradient(45deg, #000000, #404040); }
+        .java { background: linear-gradient(45deg, #f89820, #ed8b00); }
+        .spring { background: linear-gradient(45deg, #6db33f, #68b240); }
+        .flask { background: linear-gradient(45deg, #000000, #404040); }
+        .fastapi { background: linear-gradient(45deg, #009485, #00b8a2); }
+
+        .mysql { background: linear-gradient(45deg, #00618a, #0078a0); }
+        .database { background: linear-gradient(45deg, #9b59b6, #8e44ad); }
+
+        .arrows-container {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            right: -50px;
+            width: 50px;
+        }
+
+        .arrow-right {
+            width: 45px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            position: relative;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+        }
+
+        .arrow-right::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -8px;
+            width: 0;
+            height: 0;
+            border-left: 18px solid #2980b9;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            filter: drop-shadow(2px 2px 4px rgba(52, 152, 219, 0.4));
+        }
+
+        .arrow-left {
+            width: 45px;
+            height: 4px;
+            background: linear-gradient(90deg, #c0392b, #e74c3c);
+            position: relative;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+            margin-left: 5px;
+        }
+
+        .arrow-left::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: -8px;
+            width: 0;
+            height: 0;
+            border-right: 18px solid #c0392b;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            filter: drop-shadow(-2px 2px 4px rgba(231, 76, 60, 0.4));
+        }
+
+        /* Arrow labels */
+        .arrow-label {
+            position: absolute;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3px 8px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            white-space: nowrap;
+            z-index: 25;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .arrow-right .arrow-label {
+            top: -30px;
+            right: -5px;
+            color: #2980b9;
+            font-weight: 700;
+        }
+
+        .arrow-left .arrow-label {
+            top: 15px;
+            right: -5px;
+            color: #c0392b;
+            font-weight: 700;
+        }
+
+        /* Make sure the last tier doesn't have arrows */
+        .tier:last-child .arrows-container {
+            display: none;
+        }
+
+        /* Pulsing animation for better visibility */
+        .arrows-container {
+            animation: arrowPulse 3s infinite;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.7; transform: translateY(-50%) scale(1.05); }
+        }
+
+        /* Responsive behavior */
+        @media (max-width: 1200px) {
+            .architecture {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 40px;
+                padding: 20px;
+            }
+            
+            .arrows-container {
+                display: none;
+            }
+            
+            /* Add flow indicators for mobile */
+            .tier::after {
+                content: '';
+                position: absolute;
+                bottom: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 0;
+                border-left: 15px solid transparent;
+                border-right: 15px solid transparent;
+                border-top: 20px solid #3498db;
+                opacity: 0.6;
+            }
+            
+            .tier:last-child::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .architecture {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                padding: 10px;
+            }
+        }
+
+        .connection-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+
+        .connection-protocol {
+            background: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+            border: 1px solid #bdc3c7;
+        }
+
+        .business-logic {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 2px solid #e9ecef;
+        }
+
+        .business-logic-title {
+            font-weight: 700;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .database-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 1200px) {
+            .architecture {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 25px;
+            }
+
+            .tier {
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .architecture {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .tier {
+                min-height: 350px;
+                padding: 20px 15px;
+            }
+
+            .tier-header {
+                font-size: 1.3rem;
+            }
+
+            .device-icons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Generic 3-Tier Web Application Architecture</h1>
+        
+        <div class="architecture">
+            <!-- Client Tier -->
+            <div class="tier tier-1">
+                <div class="arrows-container">
+                    <div class="arrow-right">
+                        <div class="arrow-label">Request</div>
+                    </div>
+                    <div class="arrow-left">
+                        <div class="arrow-label">Response</div>
+                    </div>
+                </div>
+                
+                <h2 class="tier-header">Client</h2>
+                
+                <div class="user-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <div class="tier-subtitle">End User</div>
+                
+                <div class="device-icons">
+                    <div class="device-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21C5,22.1 5.9,23 7,23H17C18.1,23 19,22.1 19,21V3C19,1.89 18.1,1 17,1Z"/>
+                        </svg>
+                        <span class="device-label">Mobile</span>
+                    </div>
+                    
+                    <div class="device-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z"/>
+                        </svg>
+                        <span class="device-label">PC</span>
+                    </div>
+                </div>
+                
+                <div class="tier-subtitle" style="margin-top: 20px;">User Interface</div>
+            </div>
+
+            <!-- Frontend Tier -->
+            <div class="tier tier-2">
+                <div class="arrows-container">
+                    <div class="arrow-right">
+                        <div class="arrow-label">API Call</div>
+                    </div>
+                    <div class="arrow-left">
+                        <div class="arrow-label">JSON Data</div>
+                    </div>
+                </div>
+                
+                <h2 class="tier-header">Frontend</h2>
+                
+                <div class="tech-stack">
+                    <div class="tech-item react">React</div>
+                    <div class="tech-item html5">HTML5</div>
+                    <div class="tech-item css3">CSS3</div>
+                    <div class="tech-item js">JS</div>
+                    <div class="tech-item vanilla-js">Vanilla JS</div>
+                </div>
+                
+                <div class="connection-info">
+                    <div class="connection-protocol">HTTPS / AJAX</div>
+                    <div style="font-size: 0.75rem; margin-top: 5px;">Request-Response</div>
+                    <div style="font-size: 0.75rem;">(JSON/HTML)</div>
+                </div>
+            </div>
+
+            <!-- Backend API Tier -->
+            <div class="tier tier-3">
+                <div class="arrows-container">
+                    <div class="arrow-right">
+                        <div class="arrow-label">SQL Query</div>
+                    </div>
+                    <div class="arrow-left">
+                        <div class="arrow-label">Result Set</div>
+                    </div>
+                </div>
+                
+                <h2 class="tier-header">Backend API</h2>
+                <div class="tier-subtitle">Application Logic / API</div>
+                
+                <div class="tech-stack">
+                    <div class="tech-item nodejs">Node.js</div>
+                    <div class="tech-item express">Express.js</div>
+                    <div class="tech-item java">Java</div>
+                    <div class="tech-item spring">Spring Boot</div>
+                    <div class="tech-item flask">Flask / FastAPI</div>
+                </div>
+                
+                <div class="connection-info">
+                    <div class="connection-protocol">REST / GraphQL API</div>
+                    <div style="font-size: 0.75rem; margin-top: 10px;">REQUEST (JSON)</div>
+                    <div style="font-size: 0.75rem;">(JSON/HTML)</div>
+                </div>
+                
+                <div class="business-logic">
+                    <div class="business-logic-title">Business Logic</div>
+                </div>
+                
+                <div class="connection-info" style="margin-top: 15px;">
+                    <div class="connection-protocol">CRUD Operations /</div>
+                    <div class="connection-protocol">SQL Queries</div>
+                </div>
+            </div>
+
+            <!-- Database Tier -->
+            <div class="tier tier-4">
+                <h2 class="tier-header">Database</h2>
+                
+                <div class="tech-stack">
+                    <div class="tech-item mysql">MySQL Server</div>
+                </div>
+
+                <div class="tech-stack">
+                    <div class="tech-item mysql">PostgreSQL Server</div>
+                </div>
+
+                <div class="tech-stack">
+                    <div class="tech-item mysql">MongoDB Server</div>
+                </div>
+
+                <div class="tech-stack">
+                    <div class="tech-item mysql">Elastic Search Server</div>
+                </div>
+                
+                <div class="database-details">
+                    <div style="font-weight: 600; margin-bottom: 10px;">Relational/NoSQL Database</div>
+                    <div style="margin-bottom: 5px;">Tables / Schemas / Collection / Documents</div>
+                    <div>SQL</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
