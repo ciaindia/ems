@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .wireframe-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .wireframe-section {
+            border: 2px dashed #666;
+            margin-bottom: 20px;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .section-label {
+            background: white;
+            padding: 5px 10px;
+            position: absolute;
+            top: -12px;
+            left: 10px;
+            font-weight: bold;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .header-section {
+            text-align: center;
+            border-color: #e74c3c;
+        }
+        
+        .search-section {
+            border-color: #3498db;
+        }
+        
+        .table-section {
+            border-color: #27ae60;
+        }
+        
+        .form-section {
+            border-color: #f39c12;
+            display: none;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        .wireframe-element {
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            padding: 10px;
+            margin: 10px 0;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .wireframe-button {
+            background: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        
+        .wireframe-input {
+            background: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            margin: 5px;
+            width: 200px;
+        }
+        
+        .wireframe-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        .wireframe-table th, .wireframe-table td {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            text-align: center;
+            background: #ecf0f1;
+            color: #666;
+        }
+        
+        .wireframe-table th {
+            background: #d5dbdb;
+        }
+        
+        .responsive-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .device-view {
+            border: 2px solid #9b59b6;
+            padding: 10px;
+            margin: 5px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .mobile-view .wireframe-table {
+            font-size: 10px;
+        }
+        
+        .mobile-view .wireframe-input {
+            width: 100px;
+        }
+        
+        @media (max-width: 768px) {
+            .responsive-info {
+                flex-direction: column;
+            }
+            .wireframe-input {
+                width: 100%;
+                margin: 2px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-container">
+        <h1 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">Employee Management System - Wireframe</h1>
+        
+        <!-- Header Section -->
+        <div class="wireframe-section header-section">
+            <div class="section-label">HEADER SECTION</div>
+            <div class="wireframe-element">
+                <h2>Employee Management System</h2>
+                <p>Total Employees: [COUNT]</p>
+            </div>
+        </div>
+        
+        <!-- Action Bar -->
+        <div class="wireframe-section search-section">
+            <div class="section-label">ACTION BAR</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <input type="text" class="wireframe-input" placeholder="Search employees...">
+                <button class="wireframe-button" onclick="toggleForm()">+ Add Employee</button>
+            </div>
+        </div>
+        
+        <!-- Employee Form (Hidden by default) -->
+        <div class="wireframe-section form-section" id="employeeForm">
+            <div class="section-label">ADD/EDIT EMPLOYEE FORM</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <div>
+                    <label>Employee ID*</label><br>
+                    <input type="text" class="wireframe-input" placeholder="EMP001" style="width: 100%;">
+                </div>
+                <div>
+                    <label>Full Name*</label><br>
+                    <input type="text" class="wireframe-input" placeholder="Rajesh Kumar" style="width: 100%;">
+                </div>
+                <div>
+                    <label>Manager</label><br>
+                    <input type="text" class="wireframe-input" placeholder="Priya Sharma" style="width: 100%;">
+                </div>
+                <div>
+                    <label>Department*</label><br>
+                    <select class="wireframe-input" style="width: 100%;">
+                        <option>IT</option>
+                        <option>HR</option>
+                        <option>Finance</option>
+                        <option>Operations</option>
+                        <option>Marketing</option>
+                        <option>Sales</option>
+                        <option>Admin</option>
+                        <option>Legal</option>
+                        <option>R&D</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Annual Salary (INR)*</label><br>
+                    <input type="number" class="wireframe-input" placeholder="750000" style="width: 100%;">
+                </div>
+            </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <button class="wireframe-button" style="background: #27ae60;">Save Employee</button>
+                <button class="wireframe-button" style="background: #95a5a6;" onclick="toggleForm()">Cancel</button>
+            </div>
+        </div>
+        
+        <!-- Employee Table -->
+        <div class="wireframe-section table-section">
+            <div class="section-label">EMPLOYEE TABLE</div>
+            <table class="wireframe-table">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Manager</th>
+                        <th>Department</th>
+                        <th>Salary (₹)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EMP001</td>
+                        <td>Rajesh Kumar</td>
+                        <td>Priya Sharma</td>
+                        <td>IT</td>
+                        <td>₹7,50,000</td>
+                        <td>
+                            <button style="background: #f39c12; color: white; padding: 4px 8px; border: none; margin: 2px;">Edit</button>
+                            <button style="background: #e74c3c; color: white; padding: 4px 8px; border: none; margin: 2px;">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>EMP002</td>
+                        <td>Priya Sharma</td>
+                        <td>Amit Singh</td>
+                        <td>IT</td>
+                        <td>₹12,00,000</td>
+                        <td>
+                            <button style="background: #f39c12; color: white; padding: 4px 8px; border: none; margin: 2px;">Edit</button>
+                            <button style="background: #e74c3c; color: white; padding: 4px 8px; border: none; margin: 2px;">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>EMP003</td>
+                        <td>Amit Singh</td>
+                        <td>Sunita Verma</td>
+                        <td>HR</td>
+                        <td>₹8,50,000</td>
+                        <td>
+                            <button style="background: #f39c12; color: white; padding: 4px 8px; border: none; margin: 2px;">Edit</button>
+                            <button style="background: #e74c3c; color: white; padding: 4px 8px; border: none; margin: 2px;">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="color: #666; font-style: italic;">... more employee rows ...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Responsive Design Preview -->
+        <div class="wireframe-section">
+            <div class="section-label">RESPONSIVE DESIGN PREVIEW</div>
+            <div class="responsive-info">
+                <div class="device-view">
+                    <h4>Desktop (1024px+)</h4>
+                    <div class="wireframe-element">Full table with all columns visible</div>
+                </div>
+                <div class="device-view">
+                    <h4>Tablet (768px-1023px)</h4>
+                    <div class="wireframe-element">Scrollable table or stacked cards</div>
+                </div>
+                <div class="device-view mobile-view">
+                    <h4>Mobile (320px-767px)</h4>
+                    <div class="wireframe-element">Card-based layout for better mobile UX</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features List -->
+        <div class="wireframe-section">
+            <div class="section-label">KEY FEATURES</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div class="wireframe-element">
+                    <strong>CRUD Operations</strong><br>
+                    Create, Read, Update, Delete employees
+                </div>
+                <div class="wireframe-element">
+                    <strong>Real-time Search</strong><br>
+                    Search by ID, name, manager, department
+                </div>
+                <div class="wireframe-element">
+                    <strong>Data Validation</strong><br>
+                    Required fields, unique IDs, salary validation
+                </div>
+                <div class="wireframe-element">
+                    <strong>Indian Formatting</strong><br>
+                    ₹ currency, lakh format, Indian names
+                </div>
+                <div class="wireframe-element">
+                    <strong>Data Persistence</strong><br>
+                    Survives browser refresh/restart
+                </div>
+                <div class="wireframe-element">
+                    <strong>Responsive Design</strong><br>
+                    Works on all device sizes
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function toggleForm() {
+            const form = document.getElementById('employeeForm');
+            form.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
