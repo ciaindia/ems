@@ -163,29 +163,43 @@
             background: #5a6268;
         }
 
-        .form-container {
+        .form-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .form-modal.active {
+            display: flex;
+        }
+
+        .form-modal-content {
             background: white;
             padding: 2rem;
             border-radius: 15px;
+            max-width: 800px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-modal h3 {
+            text-align: center;
             margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .form-container {
             display: none;
-        }
-
-        .form-container.active {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .form-grid {
@@ -618,53 +632,55 @@
             </button>
         </div>
 
-        <!-- Employee Form -->
-        <div class="form-container" id="employeeForm">
-            <h3 id="formTitle">Add New Employee</h3>
-            <form id="employeeFormElement" onsubmit="handleSubmit(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="employeeId">Employee ID <span class="required">*</span></label>
-                        <input type="text" id="employeeId" class="form-control" placeholder="EMP001" required>
-                        <div class="error" id="employeeIdError"></div>
+        <!-- Employee Form Modal -->
+        <div class="form-modal" id="employeeFormModal">
+            <div class="form-modal-content">
+                <h3 id="formTitle">Add New Employee</h3>
+                <form id="employeeFormElement" onsubmit="handleSubmit(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="employeeId">Employee ID <span class="required">*</span></label>
+                            <input type="text" id="employeeId" class="form-control" placeholder="EMP001" required>
+                            <div class="error" id="employeeIdError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeName">Full Name <span class="required">*</span></label>
+                            <input type="text" id="employeeName" class="form-control" placeholder="Rajesh Kumar" required>
+                            <div class="error" id="employeeNameError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeManager">Manager</label>
+                            <input type="text" id="employeeManager" class="form-control" placeholder="Priya Sharma">
+                            <div class="error" id="employeeManagerError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeDepartment">Department <span class="required">*</span></label>
+                            <select id="employeeDepartment" class="form-control" required>
+                                <option value="">Select Department</option>
+                                <option value="IT">IT</option>
+                                <option value="HR">HR</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Operations">Operations</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Legal">Legal</option>
+                                <option value="R&D">R&D</option>
+                            </select>
+                            <div class="error" id="employeeDepartmentError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employeeSalary">Annual Salary (INR) <span class="required">*</span></label>
+                            <input type="number" id="employeeSalary" class="form-control" placeholder="750000" required min="1">
+                            <div class="error" id="employeeSalaryError"></div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="employeeName">Full Name <span class="required">*</span></label>
-                        <input type="text" id="employeeName" class="form-control" placeholder="Rajesh Kumar" required>
-                        <div class="error" id="employeeNameError"></div>
+                    <div style="text-align: center;">
+                        <button type="submit" class="btn btn-success">Save Employee</button>
+                        <button type="button" class="btn btn-secondary" onclick="hideFormModal()">Cancel</button>
                     </div>
-                    <div class="form-group">
-                        <label for="employeeManager">Manager</label>
-                        <input type="text" id="employeeManager" class="form-control" placeholder="Priya Sharma">
-                        <div class="error" id="employeeManagerError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="employeeDepartment">Department <span class="required">*</span></label>
-                        <select id="employeeDepartment" class="form-control" required>
-                            <option value="">Select Department</option>
-                            <option value="IT">IT</option>
-                            <option value="HR">HR</option>
-                            <option value="Finance">Finance</option>
-                            <option value="Operations">Operations</option>
-                            <option value="Marketing">Marketing</option>
-                            <option value="Sales">Sales</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Legal">Legal</option>
-                            <option value="R&D">R&D</option>
-                        </select>
-                        <div class="error" id="employeeDepartmentError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="employeeSalary">Annual Salary (INR) <span class="required">*</span></label>
-                        <input type="number" id="employeeSalary" class="form-control" placeholder="750000" required min="1">
-                        <div class="error" id="employeeSalaryError"></div>
-                    </div>
-                </div>
-                <div style="text-align: center;">
-                    <button type="submit" class="btn btn-success">Save Employee</button>
-                    <button type="button" class="btn btn-secondary" onclick="hideForm()">Cancel</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
         <!-- Employee Table -->
@@ -943,17 +959,17 @@
             return `₹${result}`;
         }
 
-        // Show add form
+        // Show add form modal
         function showAddForm() {
             editingEmployeeId = null;
             document.getElementById('formTitle').textContent = 'Add New Employee';
             document.getElementById('employeeFormElement').reset();
             clearErrors();
-            document.getElementById('employeeForm').classList.add('active');
+            document.getElementById('employeeFormModal').classList.add('active');
             document.getElementById('employeeId').value = generateEmployeeId();
         }
 
-        // Show edit form
+        // Show edit form modal
         function editEmployee(employeeId) {
             const employee = employees.find(emp => emp.employee_id === employeeId);
             if (!employee) return;
@@ -968,13 +984,18 @@
             document.getElementById('employeeSalary').value = employee.salary;
             
             clearErrors();
-            document.getElementById('employeeForm').classList.add('active');
+            document.getElementById('employeeFormModal').classList.add('active');
         }
 
-        // Hide form
-        function hideForm() {
-            document.getElementById('employeeForm').classList.remove('active');
+        // Hide form modal
+        function hideFormModal() {
+            document.getElementById('employeeFormModal').classList.remove('active');
             editingEmployeeId = null;
+        }
+
+        // Hide form (deprecated - keeping for backward compatibility)
+        function hideForm() {
+            hideFormModal();
         }
 
         // Handle form submission
@@ -1054,7 +1075,7 @@
         function addEmployee(employeeData) {
             employees.push(employeeData);
             saveEmployees();
-            hideForm();
+            hideFormModal();
             showAlert('Employee added successfully!', 'success');
             
             // Update filtered list and render
@@ -1072,7 +1093,7 @@
             if (index !== -1) {
                 employees[index] = employeeData;
                 saveEmployees();
-                hideForm();
+                hideFormModal();
                 showAlert('Employee updated successfully!', 'success');
                 
                 // Update filtered list and render
