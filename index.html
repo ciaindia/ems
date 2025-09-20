@@ -127,6 +127,15 @@
             transform: translateY(-2px);
         }
 
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+        }
+
         .btn-warning {
             background: linear-gradient(45deg, #f093fb, #f5576c);
             color: white;
@@ -270,6 +279,7 @@
         .actions {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .btn-sm {
@@ -282,12 +292,6 @@
             text-align: center;
             padding: 3rem;
             color: #666;
-        }
-
-        .empty-state img {
-            width: 200px;
-            opacity: 0.5;
-            margin-bottom: 1rem;
         }
 
         .modal {
@@ -311,10 +315,12 @@
             background: white;
             padding: 2rem;
             border-radius: 15px;
-            max-width: 400px;
+            max-width: 500px;
             width: 90%;
             text-align: center;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-actions {
@@ -322,6 +328,51 @@
             gap: 1rem;
             justify-content: center;
             margin-top: 1.5rem;
+        }
+
+        .employee-details {
+            text-align: left;
+            margin: 1.5rem 0;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .salary-value {
+            color: #27ae60;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .detail-id {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
         }
 
         .alert {
@@ -341,52 +392,6 @@
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-container {
-                max-width: none;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .table-container {
-                overflow-x: auto;
-            }
-
-            .table {
-                min-width: 800px;
-            }
-
-            .actions {
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-
-            .modal-content {
-                width: 95%;
-                padding: 1.5rem;
-            }
-
-            .modal-actions {
-                flex-direction: column;
-            }
         }
 
         .pagination-container {
@@ -476,6 +481,67 @@
             font-weight: bold;
         }
 
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-container {
+                max-width: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 800px;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .pagination-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .pagination {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
         /* Card view for mobile */
         @media (max-width: 576px) {
             .table-container {
@@ -524,21 +590,6 @@
             .actions {
                 justify-content: flex-end;
                 margin-top: 1rem;
-            }
-
-            .pagination-container {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .pagination-controls {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .pagination {
-                justify-content: center;
-                flex-wrap: wrap;
             }
         }
     </style>
@@ -659,6 +710,19 @@
                         <!-- Pagination buttons will be inserted here -->
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Details Modal -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <h3>Employee Details</h3>
+            <div class="employee-details" id="employeeDetails">
+                <!-- Employee details will be inserted here -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="hideDetailsModal()">Close</button>
             </div>
         </div>
     </div>
@@ -1021,6 +1085,63 @@
             }
         }
 
+        // Show employee details
+        function showEmployeeDetails(employeeId) {
+            const employee = employees.find(emp => emp.employee_id === employeeId);
+            if (!employee) return;
+
+            const detailsContainer = document.getElementById('employeeDetails');
+            
+            detailsContainer.innerHTML = `
+                <div class="detail-id">${employee.employee_id}</div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Full Name:</div>
+                    <div class="detail-value">${employee.name}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Manager:</div>
+                    <div class="detail-value">${employee.manager || 'N/A'}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Department:</div>
+                    <div class="detail-value">${employee.department}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Annual Salary:</div>
+                    <div class="detail-value salary-value">${formatCurrency(employee.salary)}</div>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-label">Reporting:</div>
+                    <div class="detail-value">${getReportingInfo(employee)}</div>
+                </div>
+            `;
+            
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        // Get reporting information
+        function getReportingInfo(employee) {
+            const directReports = employees.filter(emp => 
+                emp.manager.toLowerCase() === employee.name.toLowerCase()
+            );
+            
+            if (directReports.length === 0) {
+                return 'No direct reports';
+            }
+            
+            return `${directReports.length} direct report${directReports.length > 1 ? 's' : ''}: ${directReports.map(emp => emp.name).join(', ')}`;
+        }
+
+        // Hide details modal
+        function hideDetailsModal() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
         // Show delete confirmation
         function deleteEmployee(employeeId) {
             deleteEmployeeId = employeeId;
@@ -1221,6 +1342,7 @@
                     <td data-label="Department">${employee.department}</td>
                     <td data-label="Salary" class="salary">${formatCurrency(employee.salary)}</td>
                     <td data-label="Actions" class="actions">
+                        <button class="btn btn-info btn-sm" onclick="showEmployeeDetails('${employee.employee_id}')">Details</button>
                         <button class="btn btn-warning btn-sm" onclick="editEmployee('${employee.employee_id}')">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="deleteEmployee('${employee.employee_id}')">Delete</button>
                     </td>
@@ -1234,3 +1356,5 @@
         // Initialize the application when page loads
         document.addEventListener('DOMContentLoaded', init);
     </script>
+</body>
+</html>
