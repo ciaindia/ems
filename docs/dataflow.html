@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Application Architecture - Top to Bottom Flow</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .architecture {
+            position: relative;
+            height: 1150px;
+            overflow: hidden;
+        }
+
+        .layer {
+            position: absolute;
+            left: 50px;
+            right: 50px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 15px;
+            background: rgba(237, 242, 247, 0.3);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-layer { top: 20px; height: 80px; border-color: #e53e3e; background: rgba(254, 215, 215, 0.3); }
+        .client-layer { top: 140px; height: 100px; border-color: #3182ce; background: rgba(190, 227, 248, 0.3); }
+        .frontend-layer { top: 280px; height: 80px; border-color: #38a169; background: rgba(198, 246, 213, 0.3); }
+        .gateway-layer { top: 400px; height: 80px; border-color: #d69e2e; background: rgba(254, 235, 200, 0.3); }
+        .service-layer { top: 520px; height: 120px; border-color: #805ad5; background: rgba(237, 229, 254, 0.3); }
+        .cache-layer { top: 680px; height: 80px; border-color: #dc2626; background: rgba(254, 202, 202, 0.3); }
+        .data-layer { top: 800px; height: 120px; border-color: #4a5568; background: rgba(226, 232, 240, 0.3); }
+        .storage-layer { top: 950px; height: 80px; border-color: #065f46; background: rgba(209, 250, 229, 0.3); }
+
+        .layer-title {
+            position: absolute;
+            top: 5px;
+            left: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .component {
+            position: absolute;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            min-width: 120px;
+        }
+
+        .component:hover {
+            transform: translateY(-8px) scale(1.08);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        .component-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .component-desc {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        /* User Layer */
+        .user { top: 30px; left: 500px; width: 180px; height: 60px; background: linear-gradient(135deg, #e53e3e, #c53030); }
+
+        /* Client Layer */
+        .mobile { top: 160px; left: 200px; width: 160px; height: 70px; background: linear-gradient(135deg, #4299e1, #3182ce); }
+        .desktop { top: 160px; left: 420px; width: 160px; height: 70px; background: linear-gradient(135deg, #0bc5ea, #0891b2); }
+        .web { top: 160px; left: 640px; width: 160px; height: 70px; background: linear-gradient(135deg, #48bb78, #38a169); }
+
+        /* Frontend Layer */
+        .react { top: 300px; left: 450px; width: 180px; height: 60px; background: linear-gradient(135deg, #61dafb, #21759b); }
+
+        /* Gateway Layer */
+        .gateway { top: 420px; left: 450px; width: 180px; height: 60px; background: linear-gradient(135deg, #f0db4f, #d4ac0d); }
+
+        /* Service Layer */
+        .spring { top: 550px; left: 150px; width: 160px; height: 70px; background: linear-gradient(135deg, #6db33f, #4c8f2f); }
+        .express { top: 550px; left: 350px; width: 160px; height: 70px; background: linear-gradient(135deg, #68217a, #452d5b); }
+        .flask { top: 550px; left: 550px; width: 160px; height: 70px; background: linear-gradient(135deg, #007acc, #005c99); }
+
+        /* Cache Layer */
+        .redis { top: 700px; left: 450px; width: 180px; height: 60px; background: linear-gradient(135deg, #dc2626, #b91c1c); }
+
+        /* Database Layer - Fixed positioning */
+        .mysql { top: 830px; left: 200px; width: 180px; height: 70px; background: linear-gradient(135deg, #f97316, #ea580c); }
+        .mongodb { top: 830px; left: 420px; width: 180px; height: 70px; background: linear-gradient(135deg, #10b981, #059669); }
+        .elasticsearch { top: 830px; left: 640px; width: 180px; height: 70px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        /* File Storage Layer */
+        .s3 { top: 970px; left: 250px; width: 180px; height: 60px; background: linear-gradient(135deg, #ff9500, #e67e22); }
+        .spaces { top: 970px; left: 470px; width: 180px; height: 60px; background: linear-gradient(135deg, #0080ff, #0066cc); }
+
+        /* Arrow Styles */
+        .arrow {
+            position: absolute;
+            z-index: 10;
+        }
+
+        .arrow-line {
+            stroke: #4a5568;
+            stroke-width: 4;
+            fill: none;
+            stroke-dasharray: 15, 5;
+            animation: dash 2s linear infinite;
+            stroke-linecap: round;
+        }
+
+        .arrow-head {
+            fill: #4a5568;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -20;
+            }
+        }
+
+        .glow {
+            filter: drop-shadow(0 0 12px #4299e1);
+            stroke: #4299e1;
+            stroke-width: 6;
+        }
+
+        .flow-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .flow-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 12px 30px rgba(66, 153, 225, 0.6); }
+            100% { box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+        }
+
+        .active {
+            animation: pulse 1.5s infinite;
+            transform: translateY(-8px) scale(1.08);
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 1070px;
+            left: 50px;
+            right: 50px;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 15px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+        }
+
+        .info-card.flow { border-left-color: #4299e1; }
+        .info-card.tech { border-left-color: #48bb78; }
+
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2d3748;
+            font-size: 16px;
+        }
+
+        .info-list {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .step-indicator {
+            position: absolute;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #4a5568;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Web Application Architecture - User to Database Flow</h1>
+        <button class="flow-button" onclick="animateDataFlow()">▶️ Animate Request Flow</button>
+        
+        <div class="architecture">
+            <!-- Layer Backgrounds with Titles -->
+            <div class="layer user-layer">
+                <div class="layer-title" style="color: #e53e3e;">👤 User Layer</div>
+            </div>
+            <div class="layer client-layer">
+                <div class="layer-title" style="color: #3182ce;">📱 Client Layer</div>
+            </div>
+            <div class="layer frontend-layer">
+                <div class="layer-title" style="color: #38a169;">⚛️ Frontend Layer</div>
+            </div>
+            <div class="layer gateway-layer">
+                <div class="layer-title" style="color: #d69e2e;">🚪 API Gateway Layer</div>
+            </div>
+            <div class="layer service-layer">
+                <div class="layer-title" style="color: #805ad5;">🔧 Microservice Layer</div>
+            </div>
+            <div class="layer cache-layer">
+                <div class="layer-title" style="color: #dc2626;">⚡ Cache Layer</div>
+            </div>
+            <div class="layer data-layer">
+                <div class="layer-title" style="color: #4a5568;">💾 Database Layer</div>
+            </div>
+            <div class="layer storage-layer">
+                <div class="layer-title" style="color: #065f46;">📁 File Storage Layer</div>
+            </div>
+
+            <!-- Components -->
+            <div class="component user" onclick="highlightComponent(this)">
+                <div class="component-label">👤 User</div>
+                <div class="component-desc">End Users</div>
+            </div>
+
+            <div class="component mobile" onclick="highlightComponent(this)">
+                <div class="component-label">📱 Mobile</div>
+                <div class="component-desc">iOS/Android App</div>
+            </div>
+
+            <div class="component desktop" onclick="highlightComponent(this)">
+                <div class="component-label">💻 Desktop</div>
+                <div class="component-desc">Desktop App</div>
+            </div>
+
+            <div class="component web" onclick="highlightComponent(this)">
+                <div class="component-label">🌐 Web</div>
+                <div class="component-desc">Browser</div>
+            </div>
+
+            <div class="component react" onclick="highlightComponent(this)">
+                <div class="component-label">⚛️ React</div>
+                <div class="component-desc">Frontend Framework</div>
+            </div>
+
+            <div class="component gateway" onclick="highlightComponent(this)">
+                <div class="component-label">🚪 Node.js</div>
+                <div class="component-desc">API Gateway</div>
+            </div>
+
+            <div class="component spring" onclick="highlightComponent(this)">
+                <div class="component-label">🍃 Spring Boot</div>
+                <div class="component-desc">Java Microservice</div>
+            </div>
+
+            <div class="component express" onclick="highlightComponent(this)">
+                <div class="component-label">🚂 Express</div>
+                <div class="component-desc">Node.js API</div>
+            </div>
+
+            <div class="component flask" onclick="highlightComponent(this)">
+                <div class="component-label">🐍 Flask</div>
+                <div class="component-desc">Python API</div>
+            </div>
+
+            <div class="component redis" onclick="highlightComponent(this)">
+                <div class="component-label">⚡ Redis</div>
+                <div class="component-desc">In-Memory Cache</div>
+            </div>
+
+            <div class="component mysql" onclick="highlightComponent(this)">
+                <div class="component-label">🐬 MySQL</div>
+                <div class="component-desc">Relational Database</div>
+            </div>
+
+            <div class="component mongodb" onclick="highlightComponent(this)">
+                <div class="component-label">🍃 MongoDB</div>
+                <div class="component-desc">Document Database</div>
+            </div>
+
+            <div class="component elasticsearch" onclick="highlightComponent(this)">
+                <div class="component-label">🔍 Elasticsearch</div>
+                <div class="component-desc">Search & Analytics</div>
+            </div>
+
+            <div class="component s3" onclick="highlightComponent(this)">
+                <div class="component-label">☁️ AWS S3</div>
+                <div class="component-desc">Object Storage</div>
+            </div>
+
+            <div class="component spaces" onclick="highlightComponent(this)">
+                <div class="component-label">🌊 DigitalOcean</div>
+                <div class="component-desc">Spaces Storage</div>
+            </div>
+
+            <!-- Step Indicators -->
+            <div class="step-indicator" style="top: 40px;">Step 1: User Request</div>
+            <div class="step-indicator" style="top: 170px;">Step 2: Client Interface</div>
+            <div class="step-indicator" style="top: 310px;">Step 3: Frontend Processing</div>
+            <div class="step-indicator" style="top: 430px;">Step 4: API Routing</div>
+            <div class="step-indicator" style="top: 570px;">Step 5: Business Logic</div>
+            <div class="step-indicator" style="top: 710px;">Step 6: Cache Check</div>
+            <div class="step-indicator" style="top: 850px;">Step 7: Data Persistence</div>
+            <div class="step-indicator" style="top: 980px;">Step 8: File Storage</div>
+
+            <!-- Animated Arrows -->
+            <svg class="arrow" width="1100" height="1100" style="position: absolute; top: 0; left: 0;">
+                <!-- User to Clients -->
+                <path class="arrow-line" id="arrow1" d="M 590 90 Q 590 120, 280 120 Q 280 140, 280 160"/>
+                <polygon class="arrow-head" points="275,155 280,165 285,155"/>
+                
+                <path class="arrow-line" id="arrow2" d="M 590 90 Q 590 130, 500 130 Q 500 150, 500 160"/>
+                <polygon class="arrow-head" points="495,155 500,165 505,155"/>
+                
+                <path class="arrow-line" id="arrow3" d="M 590 90 Q 590 120, 720 120 Q 720 140, 720 160"/>
+                <polygon class="arrow-head" points="715,155 720,165 725,155"/>
+
+                <!-- Clients to React -->
+                <path class="arrow-line" id="arrow4" d="M 280 230 Q 280 260, 400 260 Q 400 280, 540 280 Q 540 290, 540 300"/>
+                <polygon class="arrow-head" points="535,295 540,305 545,295"/>
+                
+                <path class="arrow-line" id="arrow5" d="M 500 230 Q 500 260, 540 260 Q 540 280, 540 300"/>
+                <polygon class="arrow-head" points="535,295 540,305 545,295"/>
+                
+                <path class="arrow-line" id="arrow6" d="M 720 230 Q 720 260, 600 260 Q 600 280, 540 280 Q 540 290, 540 300"/>
+                <polygon class="arrow-head" points="535,295 540,305 545,295"/>
+
+                <!-- React to Gateway -->
+                <path class="arrow-line" id="arrow7" d="M 540 360 Q 540 380, 540 400 Q 540 410, 540 420"/>
+                <polygon class="arrow-head" points="535,415 540,425 545,415"/>
+
+                <!-- Gateway to Services -->
+                <path class="arrow-line" id="arrow8" d="M 540 480 Q 540 520, 230 520 Q 230 540, 230 550"/>
+                <polygon class="arrow-head" points="225,545 230,555 235,545"/>
+                
+                <path class="arrow-line" id="arrow9" d="M 540 480 Q 540 520, 430 520 Q 430 540, 430 550"/>
+                <polygon class="arrow-head" points="425,545 430,555 435,545"/>
+                
+                <path class="arrow-line" id="arrow10" d="M 540 480 Q 540 520, 630 520 Q 630 540, 630 550"/>
+                <polygon class="arrow-head" points="625,545 630,555 635,545"/>
+
+                <!-- Services to Redis -->
+                <path class="arrow-line" id="arrow11" d="M 230 620 Q 230 660, 400 660 Q 400 680, 540 680 Q 540 690, 540 700"/>
+                <polygon class="arrow-head" points="535,695 540,705 545,695"/>
+                
+                <path class="arrow-line" id="arrow12" d="M 430 620 Q 430 660, 540 660 Q 540 680, 540 700"/>
+                <polygon class="arrow-head" points="535,695 540,705 545,695"/>
+                
+                <path class="arrow-line" id="arrow13" d="M 630 620 Q 630 660, 580 660 Q 580 680, 540 680 Q 540 690, 540 700"/>
+                <polygon class="arrow-head" points="535,695 540,705 545,695"/>
+
+                <!-- Redis to Databases -->
+                <path class="arrow-line" id="arrow14" d="M 540 760 Q 540 800, 290 800 Q 290 820, 290 830"/>
+                <polygon class="arrow-head" points="285,825 290,835 295,825"/>
+                
+                <path class="arrow-line" id="arrow15" d="M 540 760 Q 540 800, 510 800 Q 510 820, 510 830"/>
+                <polygon class="arrow-head" points="505,825 510,835 515,825"/>
+                
+                <path class="arrow-line" id="arrow16" d="M 540 760 Q 540 800, 730 800 Q 730 820, 730 830"/>
+                <polygon class="arrow-head" points="725,825 730,835 735,825"/>
+
+                <!-- Services to File Storage (separate from cache) -->
+                <path class="arrow-line" id="arrow17" d="M 230 620 Q 230 940, 340 940 Q 340 960, 340 970"/>
+                <polygon class="arrow-head" points="335,965 340,975 345,965"/>
+                
+                <path class="arrow-line" id="arrow18" d="M 430 620 Q 430 940, 480 940 Q 480 960, 480 970"/>
+                <polygon class="arrow-head" points="475,965 480,975 485,965"/>
+                
+                <path class="arrow-line" id="arrow19" d="M 630 620 Q 630 940, 560 940 Q 560 960, 560 970"/>
+                <polygon class="arrow-head" points="555,965 560,975 565,965"/>
+            </svg>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-card flow">
+                <div class="info-title">🔄 Request Flow</div>
+                <div class="info-list">
+                    <strong>1.</strong> User initiates request from any client<br>
+                    <strong>2.</strong> React frontend processes UI logic<br>
+                    <strong>3.</strong> API Gateway routes to appropriate service<br>
+                    <strong>4.</strong> Microservice handles business logic<br>
+                    <strong>5.</strong> Redis cache improves performance<br>
+                    <strong>6.</strong> Database stores/retrieves structured data<br>
+                    <strong>7.</strong> File storage handles media & documents<br>
+                    <strong>8.</strong> Response flows back to user
+                </div>
+            </div>
+            <div class="info-card tech">
+                <div class="info-title">🛠️ Technology Stack</div>
+                <div class="info-list">
+                    <strong>Frontend:</strong> React SPA with responsive design<br>
+                    <strong>Gateway:</strong> Node.js for API orchestration<br>
+                    <strong>Services:</strong> Spring Boot, Express, Flask APIs<br>
+                    <strong>Cache:</strong> Redis for session & data caching<br>
+                    <strong>Database:</strong> MySQL (RDBMS), MongoDB (NoSQL)<br>
+                    <strong>Search:</strong> Elasticsearch for full-text search<br>
+                    <strong>Storage:</strong> AWS S3 & DigitalOcean Spaces for files
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isAnimating = false;
+
+        function highlightComponent(element) {
+            document.querySelectorAll('.component').forEach(comp => {
+                comp.classList.remove('active');
+            });
+            
+            element.classList.add('active');
+            
+            const componentName = element.querySelector('.component-label').textContent;
+            console.log(`Selected: ${componentName}`);
+        }
+
+        function animateDataFlow() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            const arrows = document.querySelectorAll('.arrow-line');
+            const components = document.querySelectorAll('.component');
+            
+            // Reset animations
+            arrows.forEach(arrow => arrow.classList.remove('glow'));
+            components.forEach(comp => comp.classList.remove('active'));
+            
+            // Animation sequence - following the vertical flow
+            const sequence = [
+                { component: '.user', arrows: [], delay: 0 },
+                { component: '.mobile', arrows: ['arrow1'], delay: 500 },
+                { component: '.desktop', arrows: ['arrow2'], delay: 700 },
+                { component: '.web', arrows: ['arrow3'], delay: 900 },
+                { component: '.react', arrows: ['arrow4', 'arrow5', 'arrow6'], delay: 1400 },
+                { component: '.gateway', arrows: ['arrow7'], delay: 2000 },
+                { component: '.spring', arrows: ['arrow8'], delay: 2500 },
+                { component: '.express', arrows: ['arrow9'], delay: 2700 },
+                { component: '.flask', arrows: ['arrow10'], delay: 2900 },
+                { component: '.redis', arrows: ['arrow11', 'arrow12', 'arrow13'], delay: 3400 },
+                { component: '.mysql', arrows: ['arrow14'], delay: 4000 },
+                { component: '.mongodb', arrows: ['arrow15'], delay: 4200 },
+                { component: '.elasticsearch', arrows: ['arrow16'], delay: 4400 },
+                { component: '.s3', arrows: ['arrow17'], delay: 4600 },
+                { component: '.spaces', arrows: ['arrow18', 'arrow19'], delay: 4800 }
+            ];
+            
+            sequence.forEach(step => {
+                setTimeout(() => {
+                    // Highlight component
+                    const component = document.querySelector(step.component);
+                    if (component) {
+                        component.classList.add('active');
+                        setTimeout(() => component.classList.remove('active'), 1200);
+                    }
+                    
+                    // Highlight arrows
+                    step.arrows.forEach(arrowId => {
+                        const arrow = document.getElementById(arrowId);
+                        if (arrow) {
+                            arrow.classList.add('glow');
+                            setTimeout(() => arrow.classList.remove('glow'), 1000);
+                        }
+                    });
+                }, step.delay);
+            });
+            
+            // Reset animation flag
+            setTimeout(() => {
+                isAnimating = false;
+            }, 6500);
+        }
+
+        // Auto-start animation
+        window.addEventListener('load', () => {
+            setTimeout(animateDataFlow, 1500);
+        });
+
+        // Enhanced hover effects
+        document.querySelectorAll('.component').forEach(component => {
+            component.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = 'translateY(-8px) scale(1.08)';
+                    this.style.boxShadow = '0 12px 30px rgba(0,0,0,0.3)';
+                }
+            });
+            
+            component.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
