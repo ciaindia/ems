@@ -31,7 +31,7 @@
 
         .architecture {
             position: relative;
-            height: 1150px;
+            height: 1050px;
             overflow: hidden;
         }
 
@@ -393,7 +393,7 @@
                 <path class="arrow-line" id="arrow10" d="M 540 480 Q 540 520, 630 520 Q 630 540, 630 550"/>
                 <polygon class="arrow-head" points="625,545 630,555 635,545"/>
 
-                <!-- Services to Redis -->
+                <!-- Services to Redis (cached data flow) -->
                 <path class="arrow-line" id="arrow11" d="M 230 620 Q 230 660, 400 660 Q 400 680, 540 680 Q 540 690, 540 700"/>
                 <polygon class="arrow-head" points="535,695 540,705 545,695"/>
                 
@@ -403,55 +403,39 @@
                 <path class="arrow-line" id="arrow13" d="M 630 620 Q 630 660, 580 660 Q 580 680, 540 680 Q 540 690, 540 700"/>
                 <polygon class="arrow-head" points="535,695 540,705 545,695"/>
 
-                <!-- Redis to Databases -->
-                <path class="arrow-line" id="arrow14" d="M 540 760 Q 540 800, 290 800 Q 290 820, 290 830"/>
+                <!-- Services directly to Databases (direct data flow) -->
+                <path class="arrow-line" id="arrow14" d="M 230 620 Q 230 750, 290 750 Q 290 820, 290 830"/>
                 <polygon class="arrow-head" points="285,825 290,835 295,825"/>
                 
-                <path class="arrow-line" id="arrow15" d="M 540 760 Q 540 800, 510 800 Q 510 820, 510 830"/>
+                <path class="arrow-line" id="arrow15" d="M 430 620 Q 430 750, 510 750 Q 510 820, 510 830"/>
                 <polygon class="arrow-head" points="505,825 510,835 515,825"/>
                 
-                <path class="arrow-line" id="arrow16" d="M 540 760 Q 540 800, 730 800 Q 730 820, 730 830"/>
+                <path class="arrow-line" id="arrow16" d="M 630 620 Q 630 750, 730 750 Q 730 820, 730 830"/>
+                <polygon class="arrow-head" points="725,825 730,835 735,825"/>
+
+                <!-- Redis to Databases (cache miss flow) -->
+                <path class="arrow-line" id="arrow17" d="M 540 760 Q 540 790, 290 790 Q 290 820, 290 830"/>
+                <polygon class="arrow-head" points="285,825 290,835 295,825"/>
+                
+                <path class="arrow-line" id="arrow18" d="M 540 760 Q 540 790, 510 790 Q 510 820, 510 830"/>
+                <polygon class="arrow-head" points="505,825 510,835 515,825"/>
+                
+                <path class="arrow-line" id="arrow19" d="M 540 760 Q 540 790, 730 790 Q 730 820, 730 830"/>
                 <polygon class="arrow-head" points="725,825 730,835 735,825"/>
 
                 <!-- Services to File Storage (separate from cache) -->
-                <path class="arrow-line" id="arrow17" d="M 230 620 Q 230 940, 340 940 Q 340 960, 340 970"/>
+                <path class="arrow-line" id="arrow20" d="M 230 620 Q 230 940, 340 940 Q 340 960, 340 970"/>
                 <polygon class="arrow-head" points="335,965 340,975 345,965"/>
                 
-                <path class="arrow-line" id="arrow18" d="M 430 620 Q 430 940, 480 940 Q 480 960, 480 970"/>
+                <path class="arrow-line" id="arrow21" d="M 430 620 Q 430 940, 480 940 Q 480 960, 480 970"/>
                 <polygon class="arrow-head" points="475,965 480,975 485,965"/>
                 
-                <path class="arrow-line" id="arrow19" d="M 630 620 Q 630 940, 560 940 Q 560 960, 560 970"/>
+                <path class="arrow-line" id="arrow22" d="M 630 620 Q 630 940, 560 940 Q 560 960, 560 970"/>
                 <polygon class="arrow-head" points="555,965 560,975 565,965"/>
             </svg>
         </div>
 
-        <div class="info-panel">
-            <div class="info-card flow">
-                <div class="info-title">🔄 Request Flow</div>
-                <div class="info-list">
-                    <strong>1.</strong> User initiates request from any client<br>
-                    <strong>2.</strong> React frontend processes UI logic<br>
-                    <strong>3.</strong> API Gateway routes to appropriate service<br>
-                    <strong>4.</strong> Microservice handles business logic<br>
-                    <strong>5.</strong> Redis cache improves performance<br>
-                    <strong>6.</strong> Database stores/retrieves structured data<br>
-                    <strong>7.</strong> File storage handles media & documents<br>
-                    <strong>8.</strong> Response flows back to user
-                </div>
-            </div>
-            <div class="info-card tech">
-                <div class="info-title">🛠️ Technology Stack</div>
-                <div class="info-list">
-                    <strong>Frontend:</strong> React SPA with responsive design<br>
-                    <strong>Gateway:</strong> Node.js for API orchestration<br>
-                    <strong>Services:</strong> Spring Boot, Express, Flask APIs<br>
-                    <strong>Cache:</strong> Redis for session & data caching<br>
-                    <strong>Database:</strong> MySQL (RDBMS), MongoDB (NoSQL)<br>
-                    <strong>Search:</strong> Elasticsearch for full-text search<br>
-                    <strong>Storage:</strong> AWS S3 & DigitalOcean Spaces for files
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <script>
@@ -479,7 +463,7 @@
             arrows.forEach(arrow => arrow.classList.remove('glow'));
             components.forEach(comp => comp.classList.remove('active'));
             
-            // Animation sequence - following the vertical flow
+            // Animation sequence - showing both direct and cached data flows
             const sequence = [
                 { component: '.user', arrows: [], delay: 0 },
                 { component: '.mobile', arrows: ['arrow1'], delay: 500 },
@@ -490,12 +474,15 @@
                 { component: '.spring', arrows: ['arrow8'], delay: 2500 },
                 { component: '.express', arrows: ['arrow9'], delay: 2700 },
                 { component: '.flask', arrows: ['arrow10'], delay: 2900 },
+                // Show cached flow
                 { component: '.redis', arrows: ['arrow11', 'arrow12', 'arrow13'], delay: 3400 },
-                { component: '.mysql', arrows: ['arrow14'], delay: 4000 },
-                { component: '.mongodb', arrows: ['arrow15'], delay: 4200 },
-                { component: '.elasticsearch', arrows: ['arrow16'], delay: 4400 },
-                { component: '.s3', arrows: ['arrow17'], delay: 4600 },
-                { component: '.spaces', arrows: ['arrow18', 'arrow19'], delay: 4800 }
+                // Show direct database flow
+                { component: '.mysql', arrows: ['arrow14', 'arrow17'], delay: 4000 },
+                { component: '.mongodb', arrows: ['arrow15', 'arrow18'], delay: 4200 },
+                { component: '.elasticsearch', arrows: ['arrow16', 'arrow19'], delay: 4400 },
+                // Show file storage flow
+                { component: '.s3', arrows: ['arrow20'], delay: 4600 },
+                { component: '.spaces', arrows: ['arrow21', 'arrow22'], delay: 4800 }
             ];
             
             sequence.forEach(step => {
