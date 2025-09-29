@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Architecture Diagram</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f23;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: radial-gradient(circle at center, #1a1a3e 0%, #0f0f23 100%);
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    .node {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(10px, 2vw, 20px) clamp(15px, 3vw, 30px);
+      border-radius: 15px;
+      color: white;
+      font-weight: 600;
+      font-size: clamp(12px, 1.5vw, 15px);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      text-align: center;
+    }
+
+    .node:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .icon {
+      font-size: clamp(20px, 4vw, 32px);
+      margin-bottom: 0.3em;
+    }
+
+    .label {
+      font-size: clamp(12px, 2vw, 14px);
+      font-weight: 700;
+    }
+
+    .sublabel {
+      font-size: clamp(9px, 1.5vw, 11px);
+      opacity: 0.8;
+      font-weight: 400;
+    }
+
+    /* Gradients */
+    .user { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .browser { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .domain { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .network { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .router { background: linear-gradient(135deg, #fa709a, #fee140); }
+    .isp { background: linear-gradient(135deg, #30cfd0, #330867); }
+    .dns { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
+    .server { background: linear-gradient(135deg, #ff9a56, #ff6a88); }
+    .nginx { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; }
+    .application { background: linear-gradient(135deg, #ff6e7f, #bfe9ff); }
+    .business { background: linear-gradient(135deg, #e0c3fc, #8ec5fc); color: #333; }
+    .database { background: linear-gradient(135deg, #f83600, #f9d423); }
+
+    /* Small screens */
+    @media (max-width: 768px) {
+      .node { padding: 10px 15px; }
+      .sublabel { display: none; } /* hide details for clarity */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <canvas id="canvas"></canvas>
+
+    <!-- Nodes -->
+    <div class="node user" id="user"><div class="icon">👤</div><div class="label">User</div><div class="sublabel">End Client</div></div>
+    <div class="node browser" id="browser"><div class="icon">🌐</div><div class="label">Browser</div><div class="sublabel">Chrome/Firefox</div></div>
+    <div class="node domain" id="domain"><div class="icon">🔗</div><div class="label">Domain</div><div class="sublabel">abc.com</div></div>
+    <div class="node network" id="network"><div class="icon">🏢</div><div class="label">LAN/WAN</div><div class="sublabel">Local Network</div></div>
+    <div class="node router" id="router"><div class="icon">📡</div><div class="label">Router</div><div class="sublabel">Gateway</div></div>
+    <div class="node isp" id="isp"><div class="icon">🌍</div><div class="label">ISP</div><div class="sublabel">Provider</div></div>
+    <div class="node dns" id="dns"><div class="icon">🗺️</div><div class="label">DNS</div><div class="sublabel">8.8.8.8</div></div>
+    <div class="node server" id="server"><div class="icon">🖥️</div><div class="label">Server</div><div class="sublabel">Web Server</div></div>
+    <div class="node nginx" id="nginx"><div class="icon">⚙️</div><div class="label">Nginx</div><div class="sublabel">Reverse Proxy</div></div>
+    <div class="node application" id="application"><div class="icon">💻</div><div class="label">Application</div><div class="sublabel">Java/Python/Node</div></div>
+    <div class="node business" id="business"><div class="icon">🎯</div><div class="label">Business Logic</div><div class="sublabel">Services/Controllers</div></div>
+    <div class="node database" id="database"><div class="icon">🗄️</div><div class="label">Database</div><div class="sublabel">MySQL/PostgreSQL</div></div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const nodes = [
+      "user","browser","domain","network","router","isp",
+      "dns","server","nginx","application","business","database"
+    ];
+
+    const connections = [
+      ["user","browser"],["browser","domain"],["domain","network"],["network","router"],
+      ["router","isp"],["isp","dns"],["dns","server"],["server","nginx"],
+      ["nginx","application"],["application","business"],["business","database"]
+    ];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      positionNodes();
+      drawConnections();
+    }
+
+    function positionNodes() {
+      const w = window.innerWidth, h = window.innerHeight;
+      const pad = Math.min(80, w * 0.05);
+
+      const positions = {
+        user: [pad, pad],
+        browser: [w*0.2, pad],
+        domain: [w*0.35, pad],
+        network: [w*0.5, pad],
+        router: [w*0.65, pad],
+        isp: [w*0.8, pad],
+        dns: [w*0.8, h*0.4],
+        server: [w*0.65, h*0.4],
+        nginx: [w*0.5, h*0.4],
+        application: [w*0.35, h*0.4],
+        business: [w*0.35, h - pad - 100],
+        database: [w*0.5, h - pad - 100]
+      };
+
+      for (const id in positions) {
+        const el = document.getElementById(id);
+        const [x,y] = positions[id];
+        el.style.transform = `translate(${x}px, ${y}px)`;
+      }
+    }
+
+    function getCenter(el) {
+      const rect = el.getBoundingClientRect();
+      return { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
+    }
+
+    function drawArrow(from, to, colors) {
+      const [c1,c2] = colors;
+      const headlen = 12;
+      const angle = Math.atan2(to.y - from.y, to.x - from.x);
+
+      const gradient = ctx.createLinearGradient(from.x, from.y, to.x, to.y);
+      gradient.addColorStop(0, c1); gradient.addColorStop(1, c2);
+
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+
+      ctx.fillStyle = c2;
+      ctx.beginPath();
+      ctx.moveTo(to.x, to.y);
+      ctx.lineTo(to.x - headlen*Math.cos(angle-Math.PI/6), to.y - headlen*Math.sin(angle-Math.PI/6));
+      ctx.lineTo(to.x - headlen*Math.cos(angle+Math.PI/6), to.y - headlen*Math.sin(angle+Math.PI/6));
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    const colors = [
+      ["#667eea","#764ba2"],["#f093fb","#f5576c"],["#4facfe","#00f2fe"],
+      ["#43e97b","#38f9d7"],["#fa709a","#fee140"],["#30cfd0","#330867"],
+      ["#a8edea","#fed6e3"],["#ff9a56","#ff6a88"],["#ffecd2","#fcb69f"],
+      ["#ff6e7f","#bfe9ff"],["#e0c3fc","#8ec5fc"]
+    ];
+
+    function drawConnections() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      connections.forEach((pair, idx) => {
+        const from = getCenter(document.getElementById(pair[0]));
+        const to = getCenter(document.getElementById(pair[1]));
+        drawArrow(from,to,colors[idx%colors.length]);
+      });
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    // Fade-in animation
+    nodes.forEach((id,i) => {
+      const el = document.getElementById(id);
+      el.style.opacity="0";
+      setTimeout(()=>{
+        el.style.transition="opacity .5s ease"; el.style.opacity="1";
+      }, i*100);
+    });
+
+    // Redraw loop
+    function loop() { drawConnections(); requestAnimationFrame(loop); }
+    loop();
+  </script>
+</body>
+</html>
