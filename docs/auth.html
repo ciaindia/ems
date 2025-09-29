@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication & Authorization Architecture</title>
+    <title>Authentication Architecture</title>
     <style>
         * {
             margin: 0;
@@ -12,163 +12,289 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f172a;
             min-height: 100vh;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 60px 20px;
+            color: #e2e8f0;
         }
         
         .container {
             max-width: 1400px;
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 0 auto;
         }
         
         h1 {
             text-align: center;
-            color: #333;
-            margin-bottom: 50px;
-            font-size: 2em;
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        .architecture {
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 60px;
+            font-size: 1.1em;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .flow-section {
             display: flex;
             flex-direction: column;
-            gap: 40px;
+            gap: 20px;
             align-items: center;
+        }
+        
+        .section-badge {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        .section-badge.primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
         
         .layer {
             width: 100%;
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .layer-header {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 30px;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .layer-icon {
+            font-size: 1.8em;
+        }
+        
+        .layer-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #f1f5f9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .layer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
             flex-wrap: wrap;
         }
         
         .component {
-            background: white;
-            border-radius: 12px;
-            padding: 25px 30px;
-            min-width: 200px;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border-radius: 16px;
+            padding: 25px;
+            min-width: 160px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
-            border: 3px solid;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+            opacity: 0.6;
         }
         
         .component:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
         
         .component h3 {
-            font-size: 1.2em;
+            font-size: 1.1em;
             margin-bottom: 10px;
-            font-weight: 600;
+            font-weight: 700;
+            color: #f1f5f9;
         }
         
         .component p {
             font-size: 0.9em;
-            color: #666;
-            line-height: 1.5;
+            color: #cbd5e1;
+            line-height: 1.6;
         }
         
-        .client {
-            border-color: #3b82f6;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
+        .blue { border-color: #3b82f6; color: #3b82f6; }
+        .purple { border-color: #8b5cf6; color: #8b5cf6; }
+        .amber { border-color: #f59e0b; color: #f59e0b; }
+        .green { border-color: #10b981; color: #10b981; }
+        .pink { border-color: #ec4899; color: #ec4899; }
+        
+        .arrow-section {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            padding: 15px 0;
+            justify-content: center;
         }
         
-        .client h3, .client p {
-            color: white;
-        }
-        
-        .gateway {
-            border-color: #8b5cf6;
-            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-            color: white;
-            min-width: 300px;
-        }
-        
-        .gateway h3, .gateway p {
-            color: white;
-        }
-        
-        .auth {
-            border-color: #f59e0b;
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: white;
-        }
-        
-        .auth h3, .auth p {
-            color: white;
-        }
-        
-        .database {
-            border-color: #10b981;
-            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-            color: white;
-        }
-        
-        .database h3, .database p {
-            color: white;
-        }
-        
-        .service {
-            border-color: #ec4899;
-            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
-            color: white;
-            min-width: 180px;
-        }
-        
-        .service h3, .service p {
-            color: white;
+        .arrow-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
         }
         
         .arrow {
-            font-size: 2em;
-            color: #9ca3af;
-            font-weight: bold;
-        }
-        
-        .arrow-down {
-            display: block;
-            text-align: center;
             font-size: 2.5em;
-            color: #9ca3af;
+            color: #64748b;
         }
         
-        .features {
+        .arrow.request {
+            color: #3b82f6;
+            animation: slideDown 2s ease-in-out infinite;
+        }
+        
+        .arrow.response {
+            color: #10b981;
+            animation: slideUp 2s ease-in-out infinite;
+        }
+        
+        @keyframes slideDown {
+            0%, 100% { opacity: 0.6; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(5px); }
+        }
+        
+        @keyframes slideUp {
+            0%, 100% { opacity: 0.6; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-5px); }
+        }
+        
+        .arrow-label {
             display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 10px;
+            gap: 10px;
+            align-items: center;
             flex-wrap: wrap;
+            justify-content: center;
         }
         
-        .feature {
-            background: rgba(255,255,255,0.2);
-            padding: 6px 10px;
-            border-radius: 6px;
+        .label {
+            font-size: 0.75em;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(100, 116, 139, 0.2);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: #e2e8f0;
+            white-space: nowrap;
+        }
+        
+        .label.request {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #93c5fd;
+        }
+        
+        .label.response {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #6ee7b7;
+        }
+        
+        .horizontal-flow {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .h-arrow {
+            font-size: 2em;
+            color: #64748b;
+        }
+        
+        .multi-component {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .component.small {
+            min-width: 120px;
+            padding: 18px;
+        }
+        
+        .component.small h3 {
+            font-size: 0.95em;
+        }
+        
+        .component.small p {
             font-size: 0.8em;
-            font-weight: 500;
+        }
+        
+        .shared-layer {
+            grid-column: 1 / -1;
+        }
+        
+        .flow-note {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #93c5fd;
+            text-align: center;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .shared-layer {
+                grid-column: 1;
+            }
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
+            h1 {
+                font-size: 1.8em;
             }
             
-            h1 {
-                font-size: 1.5em;
+            .layer {
+                padding: 20px;
             }
             
             .component {
@@ -179,128 +305,188 @@
 </head>
 <body>
     <div class="container">
-        <h1>🔐 Authentication & Authorization Architecture</h1>
+        <h1>🔐 Authentication & Authorization</h1>
+        <div class="subtitle">Microservices Architecture with Separate Auth Flow</div>
         
-        <div class="architecture">
-            <!-- Client Layer -->
-            <div class="layer">
-                <div class="component client">
-                    <h3>👤 Client Application</h3>
-                    <p>Web / Mobile / Desktop</p>
-                    <div class="features">
-                        <span class="feature">Sends Credentials</span>
-                        <span class="feature">Stores JWT</span>
+        <!-- Client & Gateway (Shared) -->
+        <div style="display: flex; flex-direction: column; gap: 20px; align-items: center; margin-bottom: 40px;">
+            <div class="layer" style="max-width: 900px;">
+                <div class="layer-header">
+                    <span class="layer-icon">👥</span>
+                    <span class="layer-title">Client Layer</span>
+                </div>
+                <div class="layer-content">
+                    <div class="component blue">
+                        <h3>💻 Client Application</h3>
+                        <p>Web / Mobile / Desktop</p>
                     </div>
                 </div>
             </div>
             
-            <div class="arrow-down">↓</div>
-            
-            <!-- API Gateway Layer -->
-            <div class="layer">
-                <div class="component gateway">
-                    <h3>🚪 API Gateway (Node.js)</h3>
-                    <p>Central Entry Point</p>
-                    <div class="features">
-                        <span class="feature">JWT Verification</span>
-                        <span class="feature">Route Management</span>
-                        <span class="feature">Authorization Check</span>
-                    </div>
-                </div>
+            <div class="arrow-section">
+                <div class="arrow">↓</div>
             </div>
             
-            <div class="arrow-down">↓</div>
-            
-            <!-- Authentication Service Layer -->
-            <div class="layer">
-                <div class="component auth">
-                    <h3>🔑 Authentication Service</h3>
-                    <p>Login & Token Generation</p>
-                    <div class="features">
-                        <span class="feature">MD5 Hash</span>
-                        <span class="feature">JWT Creation</span>
-                        <span class="feature">Validation</span>
+            <div class="layer" style="max-width: 900px;">
+                <div class="layer-header">
+                    <span class="layer-icon">🚪</span>
+                    <span class="layer-title">API Gateway Layer</span>
+                </div>
+                <div class="layer-content">
+                    <div class="component purple">
+                        <h3>🔀 API Gateway</h3>
+                        <p>Node.js Express<br>JWT Verification & Routing<br>Rate Limiting</p>
                     </div>
                 </div>
-                
-                <span class="arrow">↔️</span>
-                
-                <div class="component database">
-                    <h3>🗄️ MySQL Database</h3>
-                    <p>Admin Table</p>
-                    <div class="features">
-                        <span class="feature">username</span>
-                        <span class="feature">password (MD5)</span>
-                        <span class="feature">role</span>
-                    </div>
+                <div class="flow-note">
+                    Gateway routes to Auth Service (one-time login) OR Business Services (with valid JWT)
                 </div>
             </div>
+        </div>
+        
+        <!-- Two Parallel Flows -->
+        <div class="main-layout">
             
-            <div class="arrow-down">↓</div>
-            
-            <!-- Backend Services Layer -->
-            <div class="layer">
-                <div class="component service">
-                    <h3>⚡ Node.js</h3>
-                    <p>Express</p>
-                    <div class="features">
-                        <span class="feature">REST APIs</span>
+            <!-- LEFT: Authentication Flow (One-Time) -->
+            <div class="flow-section">
+                <div class="section-badge">🔐 Authentication Flow (One-Time)</div>
+                
+                <div class="arrow-section">
+                    <div class="arrow-flow">
+                        <span class="label request">📤 Request</span>
+                        <div class="arrow request">↓</div>
+                        <span class="label request">POST /login<br>username + password</span>
+                    </div>
+                    <div class="arrow-flow">
+                        <span class="label response">📥 Response</span>
+                        <div class="arrow response">↑</div>
+                        <span class="label response">JWT Token<br>User Info</span>
                     </div>
                 </div>
                 
-                <div class="component service">
-                    <h3>☕ Java</h3>
-                    <p>Spring Boot</p>
-                    <div class="features">
-                        <span class="feature">Microservices</span>
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">🔑</span>
+                        <span class="layer-title">Auth Service</span>
+                    </div>
+                    <div class="layer-content">
+                        <div class="component amber">
+                            <h3>🔑 Authentication</h3>
+                            <p>Validate Credentials<br>MD5 Hash Check<br>Generate JWT Token<br>Set Expiry</p>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="component service">
-                    <h3>🐍 Python</h3>
-                    <p>Flask</p>
-                    <div class="features">
-                        <span class="feature">Data APIs</span>
+                <div class="arrow-section">
+                    <div class="arrow-flow">
+                        <span class="label request">📤 Request</span>
+                        <div class="arrow request">↓</div>
+                        <span class="label request">SELECT * FROM admin<br>WHERE username</span>
+                    </div>
+                    <div class="arrow-flow">
+                        <span class="label response">📥 Response</span>
+                        <div class="arrow response">↑</div>
+                        <span class="label response">User Record<br>password, role</span>
                     </div>
                 </div>
+                
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">🗄️</span>
+                        <span class="layer-title">Admin Database</span>
+                    </div>
+                    <div class="layer-content">
+                        <div class="component green">
+                            <h3>🗄️ MySQL</h3>
+                            <p>Admin Table<br>• username<br>• password (MD5)<br>• role<br>• permissions</p>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
             
-            <div class="arrow-down">↓</div>
-            
-            <!-- Database Layer for Services -->
-            <div class="layer">
-                <div class="component database">
-                    <h3>🗄️ MySQL</h3>
-                    <p>Relational Database</p>
-                    <div class="features">
-                        <span class="feature">Transactional Data</span>
+            <!-- RIGHT: Business Logic Flow (Every Request) -->
+            <div class="flow-section">
+                <div class="section-badge primary">⚙️ Business Logic Flow (Every Request)</div>
+                
+                <div class="arrow-section">
+                    <div class="arrow-flow">
+                        <span class="label request">📤 Request</span>
+                        <div class="arrow request">↓</div>
+                        <span class="label request">GET/POST/PUT/DELETE<br>Headers: Bearer JWT</span>
+                    </div>
+                    <div class="arrow-flow">
+                        <span class="label response">📥 Response</span>
+                        <div class="arrow response">↑</div>
+                        <span class="label response">JSON Data<br>Status Code</span>
                     </div>
                 </div>
                 
-                <div class="component database">
-                    <h3>🍃 MongoDB</h3>
-                    <p>NoSQL Database</p>
-                    <div class="features">
-                        <span class="feature">Document Store</span>
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">⚙️</span>
+                        <span class="layer-title">Services Layer</span>
+                    </div>
+                    <div class="layer-content">
+                        <div class="multi-component">
+                            <div class="component pink small">
+                                <h3>⚡ Node.js</h3>
+                                <p>Express<br>REST APIs</p>
+                            </div>
+                            <div class="component pink small">
+                                <h3>☕ Java</h3>
+                                <p>Spring Boot<br>Microservices</p>
+                            </div>
+                            <div class="component pink small">
+                                <h3>🐍 Python</h3>
+                                <p>Flask<br>Data APIs</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="component database">
-                    <h3>🔍 Elasticsearch</h3>
-                    <p>Search Engine</p>
-                    <div class="features">
-                        <span class="feature">Full-Text Search</span>
+                <div class="arrow-section">
+                    <div class="arrow-flow">
+                        <span class="label request">📤 Request</span>
+                        <div class="arrow request">↓</div>
+                        <span class="label request">SQL / NoSQL Query<br>INSERT / UPDATE / SELECT</span>
+                    </div>
+                    <div class="arrow-flow">
+                        <span class="label response">📥 Response</span>
+                        <div class="arrow response">↑</div>
+                        <span class="label response">Query Results<br>Affected Rows</span>
                     </div>
                 </div>
                 
-                <div class="component database">
-                    <h3>⚡ Redis</h3>
-                    <p>Cache Layer</p>
-                    <div class="features">
-                        <span class="feature">In-Memory Cache</span>
+                <div class="layer">
+                    <div class="layer-header">
+                        <span class="layer-icon">💾</span>
+                        <span class="layer-title">Data Layer</span>
+                    </div>
+                    <div class="layer-content">
+                        <div class="multi-component">
+                            <div class="component green small">
+                                <h3>🗄️ MySQL</h3>
+                                <p>Relational<br>Transactional</p>
+                            </div>
+                            <div class="component green small">
+                                <h3>🍃 MongoDB</h3>
+                                <p>NoSQL<br>Documents</p>
+                            </div>
+                            <div class="component green small">
+                                <h3>🔍 Elasticsearch</h3>
+                                <p>Search<br>Analytics</p>
+                            </div>
+                            <div class="component green small">
+                                <h3>⚡ Redis</h3>
+                                <p>Cache<br>Session</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                
             </div>
+            
         </div>
     </div>
 </body>
