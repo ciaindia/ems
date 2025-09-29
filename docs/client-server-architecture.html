@@ -53,21 +53,9 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
     }
 
-    .icon {
-      font-size: clamp(20px, 4vw, 32px);
-      margin-bottom: 0.3em;
-    }
-
-    .label {
-      font-size: clamp(12px, 2vw, 14px);
-      font-weight: 700;
-    }
-
-    .sublabel {
-      font-size: clamp(9px, 1.5vw, 11px);
-      opacity: 0.8;
-      font-weight: 400;
-    }
+    .icon { font-size: clamp(20px, 4vw, 32px); margin-bottom: 0.3em; }
+    .label { font-size: clamp(12px, 2vw, 14px); font-weight: 700; }
+    .sublabel { font-size: clamp(9px, 1.5vw, 11px); opacity: 0.8; font-weight: 400; }
 
     /* Gradients */
     .user { background: linear-gradient(135deg, #667eea, #764ba2); }
@@ -79,14 +67,15 @@
     .dns { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
     .server { background: linear-gradient(135deg, #ff9a56, #ff6a88); }
     .nginx { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; }
+    .react { background: linear-gradient(135deg, #61dafb, #21a1f1); color: #000; }
     .application { background: linear-gradient(135deg, #ff6e7f, #bfe9ff); }
     .business { background: linear-gradient(135deg, #e0c3fc, #8ec5fc); color: #333; }
     .database { background: linear-gradient(135deg, #f83600, #f9d423); }
+    .storage { background: linear-gradient(135deg, #36d1dc, #5b86e5); }
 
-    /* Small screens */
     @media (max-width: 768px) {
       .node { padding: 10px 15px; }
-      .sublabel { display: none; } /* hide details for clarity */
+      .sublabel { display: none; }
     }
   </style>
 </head>
@@ -94,7 +83,7 @@
   <div class="container">
     <canvas id="canvas"></canvas>
 
-    <!-- Nodes -->
+    <!-- Top & Middle Layer -->
     <div class="node user" id="user"><div class="icon">👤</div><div class="label">User</div><div class="sublabel">End Client</div></div>
     <div class="node browser" id="browser"><div class="icon">🌐</div><div class="label">Browser</div><div class="sublabel">Chrome/Firefox</div></div>
     <div class="node domain" id="domain"><div class="icon">🔗</div><div class="label">Domain</div><div class="sublabel">abc.com</div></div>
@@ -104,9 +93,11 @@
     <div class="node dns" id="dns"><div class="icon">🗺️</div><div class="label">DNS</div><div class="sublabel">8.8.8.8</div></div>
     <div class="node server" id="server"><div class="icon">🖥️</div><div class="label">Server</div><div class="sublabel">Web Server</div></div>
     <div class="node nginx" id="nginx"><div class="icon">⚙️</div><div class="label">Nginx</div><div class="sublabel">Reverse Proxy</div></div>
-    <div class="node application" id="application"><div class="icon">💻</div><div class="label">Application</div><div class="sublabel">Java/Python/Node</div></div>
+    <div class="node react" id="react"><div class="icon">⚛️</div><div class="label">React</div><div class="sublabel">Frontend UI</div></div>
+    <div class="node application" id="application"><div class="icon">💻</div><div class="label">Backend</div><div class="sublabel">Java/Python/Node</div></div>
     <div class="node business" id="business"><div class="icon">🎯</div><div class="label">Business Logic</div><div class="sublabel">Services/Controllers</div></div>
     <div class="node database" id="database"><div class="icon">🗄️</div><div class="label">Database</div><div class="sublabel">MySQL/PostgreSQL</div></div>
+    <div class="node storage" id="storage"><div class="icon">🗂️</div><div class="label">Files/Storage</div><div class="sublabel">S3, Blobs, etc.</div></div>
   </div>
 
   <script>
@@ -115,13 +106,14 @@
 
     const nodes = [
       "user","browser","domain","network","router","isp",
-      "dns","server","nginx","application","business","database"
+      "dns","server","nginx","react","application","business","database","storage"
     ];
 
     const connections = [
       ["user","browser"],["browser","domain"],["domain","network"],["network","router"],
       ["router","isp"],["isp","dns"],["dns","server"],["server","nginx"],
-      ["nginx","application"],["application","business"],["business","database"]
+      ["nginx","react"],["react","application"],["application","business"],
+      ["business","database"],["business","storage"]
     ];
 
     function resizeCanvas() {
@@ -145,9 +137,11 @@
         dns: [w*0.8, h*0.4],
         server: [w*0.65, h*0.4],
         nginx: [w*0.5, h*0.4],
-        application: [w*0.35, h*0.4],
+        react: [w*0.35, h*0.4],
+        application: [w*0.2, h*0.4],
         business: [w*0.35, h - pad - 100],
-        database: [w*0.5, h - pad - 100]
+        database: [w*0.55, h - pad - 100],
+        storage: [w*0.15, h - pad - 100]
       };
 
       for (const id in positions) {
@@ -189,8 +183,9 @@
     const colors = [
       ["#667eea","#764ba2"],["#f093fb","#f5576c"],["#4facfe","#00f2fe"],
       ["#43e97b","#38f9d7"],["#fa709a","#fee140"],["#30cfd0","#330867"],
-      ["#a8edea","#fed6e3"],["#ff9a56","#ff6a88"],["#ffecd2","#fcb69f"],
-      ["#ff6e7f","#bfe9ff"],["#e0c3fc","#8ec5fc"]
+      ["#a8edea","#fed6e3"],["#ff9a56","#ff6a88"],["#61dafb","#21a1f1"],
+      ["#ff6e7f","#bfe9ff"],["#e0c3fc","#8ec5fc"],["#f83600","#f9d423"],
+      ["#36d1dc","#5b86e5"]
     ];
 
     function drawConnections() {
