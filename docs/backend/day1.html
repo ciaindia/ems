@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express.js & Axios Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        p, li {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        ul {
+            margin-left: 25px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .note strong {
+            color: #856404;
+        }
+        .table-grid {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table-grid th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .table-grid td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .table-grid tr:hover {
+            background: #f9f9f9;
+        }
+        footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Express.js & Axios</h1>
+            <p>Backend Server & Frontend API Calls</p>
+        </header>
+
+        <div class="content">
+            <!-- Introduction -->
+            <div class="section">
+                <h2>📚 Introduction</h2>
+                <p>This guide covers building a backend API with <strong>Express.js</strong> and making HTTP requests from the frontend using <strong>Axios</strong>. You'll learn the fundamentals of client-server communication.</p>
+            </div>
+
+            <!-- What is Express.js -->
+            <div class="section">
+                <h2>🚀 What is Express.js?</h2>
+                <p>Express.js is a minimal and flexible Node.js web framework that makes it easy to build web applications and APIs. It handles HTTP requests and responses.</p>
+                
+                <h3>Key Concepts:</h3>
+                <ul>
+                    <li><strong>Server:</strong> A computer that listens for incoming requests</li>
+                    <li><strong>Port:</strong> A virtual "door" where the server listens (e.g., 3000)</li>
+                    <li><strong>Routes:</strong> URLs that handle specific HTTP methods (GET, POST, PUT, DELETE)</li>
+                    <li><strong>Middleware:</strong> Functions that process requests before they reach routes</li>
+                </ul>
+
+                <h3>Basic Structure:</h3>
+                <pre><span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">"express"</span>)
+<span class="keyword">const</span> app = <span class="function">express</span>()
+
+app.<span class="function">listen</span>(<span class="string">3000</span>, () => {
+    console.<span class="function">log</span>(<span class="string">"Serving on port 3000"</span>)
+})</pre>
+            </div>
+
+            <!-- HTTP Methods -->
+            <div class="section">
+                <h2>🌐 HTTP Methods (CRUD Operations)</h2>
+                <table class="table-grid">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th>Purpose</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>GET</strong></td>
+                            <td><strong>Read</strong></td>
+                            <td>Retrieve data from the server</td>
+                        </tr>
+                        <tr>
+                            <td><strong>POST</strong></td>
+                            <td><strong>Create</strong></td>
+                            <td>Send new data to the server</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PUT</strong></td>
+                            <td><strong>Update</strong></td>
+                            <td>Update existing data on the server</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DELETE</strong></td>
+                            <td><strong>Delete</strong></td>
+                            <td>Remove data from the server</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Backend Example -->
+            <div class="section">
+                <h2>⚙️ Backend: Express.js Server</h2>
+                <p>The server handles incoming requests and sends responses back to the client.</p>
+                
+                <h3>Complete Example (app.js):</h3>
+                <pre><span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">"express"</span>)
+<span class="keyword">const</span> app = <span class="function">express</span>()
+<span class="keyword">const</span> cors = <span class="function">require</span>(<span class="string">"cors"</span>)
+
+app.<span class="function">use</span>(cors())    <span class="comment">// Enable CORS</span>
+
+<span class="keyword">let</span> users_data = [
+    {name: <span class="string">"Karan"</span>},
+    {name: <span class="string">"Divya"</span>},
+]
+
+<span class="comment">// GET - Retrieve users</span>
+app.<span class="function">get</span>(<span class="string">"/users"</span>, (req, res) => {
+    res.<span class="function">send</span>(users_data)
+})
+
+<span class="comment">// POST - Create new user</span>
+app.<span class="function">post</span>(<span class="string">"/users"</span>, (req, res) => {
+    res.<span class="function">send</span>(<span class="string">"Users Post"</span>)
+})
+
+<span class="comment">// PUT - Update user</span>
+app.<span class="function">put</span>(<span class="string">"/users"</span>, (req, res) => {
+    res.<span class="function">send</span>(<span class="string">"Users Put"</span>)
+})
+
+<span class="comment">// DELETE - Remove user</span>
+app.<span class="function">delete</span>(<span class="string">"/users"</span>, (req, res) => {
+    res.<span class="function">send</span>(<span class="string">"Users Delete"</span>)
+})
+
+app.<span class="function">listen</span>(3000, () => {
+    console.<span class="function">log</span>(<span class="string">"Serving on port 3000"</span>)
+})</pre>
+
+                <div class="note">
+                    <strong>💡 Note on CORS:</strong> CORS (Cross-Origin Resource Sharing) allows frontend and backend to communicate even if they're on different ports or domains. Without it, browser security blocks the requests.
+                </div>
+            </div>
+
+            <!-- Frontend Example -->
+            <div class="section">
+                <h2>💻 Frontend: Axios HTTP Requests</h2>
+                <p>The frontend uses Axios to communicate with the backend server. Axios is a library that simplifies making HTTP requests.</p>
+                
+                <h3>Setup in HTML:</h3>
+                <pre>&lt;script src=<span class="string">"https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"</span>&gt;&lt;/script&gt;</pre>
+
+                <h3>Making HTTP Requests:</h3>
+                <pre><span class="comment">// GET - Fetch data</span>
+axios.<span class="function">get</span>(<span class="string">'http://localhost:3000/users'</span>)
+    .<span class="function">then</span>(res => {
+        console.<span class="function">table</span>(res.data)
+    })
+
+<span class="comment">// POST - Send data</span>
+axios.<span class="function">post</span>(<span class="string">'http://localhost:3000/users'</span>)
+    .<span class="function">then</span>(res => {
+        console.<span class="function">log</span>(<span class="string">"FE POST: "</span>, res.data)
+    })
+
+<span class="comment">// PUT - Update data</span>
+axios.<span class="function">put</span>(<span class="string">'http://localhost:3000/users'</span>)
+    .<span class="function">then</span>(res => {
+        console.<span class="function">log</span>(<span class="string">"FE PUT: "</span>, res.data)
+    })
+
+<span class="comment">// DELETE - Remove data</span>
+axios.<span class="function">delete</span>(<span class="string">'http://localhost:3000/users'</span>)
+    .<span class="function">then</span>(res => {
+        console.<span class="function">log</span>(<span class="string">"FE DELETE: "</span>, res.data)
+    })</pre>
+
+                <div class="note">
+                    <strong>💡 Note:</strong> Each request uses <code>.then()</code> to handle the response. This is a Promise pattern that waits for the server to respond before executing the next line.
+                </div>
+            </div>
+
+            <!-- Key Terms -->
+            <div class="section">
+                <h2>📖 Key Terminology</h2>
+                <ul>
+                    <li><strong>Localhost:</strong> Your own computer (127.0.0.1)</li>
+                    <li><strong>Port 3000:</strong> The address where the server listens</li>
+                    <li><strong>Request:</strong> Data sent from client to server</li>
+                    <li><strong>Response:</strong> Data sent from server back to client</li>
+                    <li><strong>Endpoint:</strong> A specific URL route (e.g., /users)</li>
+                    <li><strong>Promise:</strong> A JavaScript object that handles async operations</li>
+                    <li><strong>.then():</strong> Executes code after a Promise resolves</li>
+                </ul>
+            </div>
+
+            <!-- Quick Summary -->
+            <div class="section">
+                <h2>✅ Quick Summary</h2>
+                <ol style="margin-left: 25px;">
+                    <li>The <strong>backend server</strong> listens on a port (3000) and waits for requests</li>
+                    <li>The <strong>frontend</strong> sends HTTP requests using Axios</li>
+                    <li>The <strong>server processes</strong> the request and sends a response</li>
+                    <li>The <strong>frontend</strong> receives the response and uses .then() to handle it</li>
+                    <li>Use <strong>GET</strong> to read, <strong>POST</strong> to create, <strong>PUT</strong> to update, <strong>DELETE</strong> to remove</li>
+                </ol>
+            </div>
+        </div>
+
+        <footer>
+            <p>📚 Happy Learning! Keep experimenting with APIs and building amazing applications.</p>
+        </footer>
+    </div>
+</body>
+</html>
