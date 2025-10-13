@@ -295,6 +295,90 @@ axios.<span class="function">delete</span>(<span class="string">'http://localhos
                 </ul>
             </div>
 
+            <!-- How to Run -->
+            <div class="section">
+                <h2>🏃 How to Run on Local System</h2>
+                <p>Follow these steps to run both the backend and frontend on your computer using VS Code.</p>
+                
+                <h3>Step 1: Install Dependencies</h3>
+                <p>Open terminal in VS Code and run:</p>
+                <pre>npm install express cors
+npm install --save-dev nodemon</pre>
+                
+                <h3>Step 2: Create Project Structure</h3>
+                <pre>project-folder/
+├── app.js
+├── index.html
+└── package.json</pre>
+
+                <h3>Step 3: Setup package.json Scripts</h3>
+                <p>Update your <code>package.json</code> to include this script section:</p>
+                <pre>{
+  <span class="string">"name"</span>: <span class="string">"express-api"</span>,
+  <span class="string">"version"</span>: <span class="string">"1.0.0"</span>,
+  <span class="string">"main"</span>: <span class="string">"app.js"</span>,
+  <span class="string">"scripts"</span>: {
+    <span class="string">"start"</span>: <span class="string">"node app.js"</span>,
+    <span class="string">"dev"</span>: <span class="string">"nodemon app.js"</span>
+  },
+  <span class="string">"dependencies"</span>: {
+    <span class="string">"express"</span>: <span class="string">"^4.18.0"</span>,
+    <span class="string">"cors"</span>: <span class="string">"^2.8.5"</span>
+  },
+  <span class="string">"devDependencies"</span>: {
+    <span class="string">"nodemon"</span>: <span class="string">"^3.0.0"</span>
+  }
+}</pre>
+
+                <h3>Step 4: Run Backend Server</h3>
+                <p><strong>Option 1 - Without Hot Reload:</strong></p>
+                <pre>npm start
+<span class="comment">// or</span>
+node app.js</pre>
+
+                <p><strong>Option 2 - With Hot Reload (Nodemon):</strong></p>
+                <pre>npm run dev</pre>
+
+                <div class="note">
+                    <strong>💡 What is Nodemon?</strong> Nodemon automatically restarts your server whenever you make changes to the code. This saves you from manually restarting the server every time. Much better for development!
+                </div>
+
+                <h3>Step 5: Run Frontend with Live Server</h3>
+                <p>In a new terminal, install Live Server extension first:</p>
+                <ul>
+                    <li>Go to VS Code Extensions (Ctrl+Shift+X / Cmd+Shift+X)</li>
+                    <li>Search for "Live Server"</li>
+                    <li>Install by Ritwick Dey</li>
+                </ul>
+
+                <p>Then right-click on <code>index.html</code> and select "Open with Live Server"</p>
+
+                <h3>Step 6: Verify Everything Works</h3>
+                <ul>
+                    <li>Backend should be running on: <code>http://localhost:3000</code></li>
+                    <li>Frontend should be running on: <code>http://localhost:5500</code> (or similar)</li>
+                    <li>Open browser console (F12) to see API responses</li>
+                </ul>
+
+                <div class="note">
+                    <strong>💡 Pro Tips:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>Keep both terminals open: one for backend, one for frontend</li>
+                        <li>Nodemon watches for file changes automatically</li>
+                        <li>Live Server auto-refreshes your HTML when you save</li>
+                        <li>Use browser DevTools (F12) to debug API calls</li>
+                    </ul>
+                </div>
+
+                <h3>Troubleshooting</h3>
+                <ul>
+                    <li><strong>Port 3000 already in use?</strong> Change port in app.js: <code>app.listen(3001, ...)</code></li>
+                    <li><strong>CORS errors?</strong> Make sure CORS middleware is enabled in app.js</li>
+                    <li><strong>Axios not working?</strong> Check that Axios CDN link is in your HTML</li>
+                    <li><strong>nodemon not found?</strong> Run <code>npm install --save-dev nodemon</code> again</li>
+                </ul>
+            </div>
+
             <!-- Quick Summary -->
             <div class="section">
                 <h2>✅ Quick Summary</h2>
