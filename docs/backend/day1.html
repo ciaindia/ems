@@ -302,8 +302,10 @@ axios.<span class="function">delete</span>(<span class="string">'http://localhos
                 
                 <h3>Step 1: Install Dependencies</h3>
                 <p>Open terminal in VS Code and run:</p>
-                <pre>npm install express cors
-npm install --save-dev nodemon</pre>
+                <pre>npm install express cors</pre>
+
+                <p>Install nodemon globally (one time only):</p>
+                <pre>npm -g install nodemon</pre>
                 
                 <h3>Step 2: Create Project Structure</h3>
                 <pre>project-folder/
@@ -343,6 +345,7 @@ npm install --save-dev nodemon</pre>
                     <ul style="margin-top: 10px;">
                         <li>Keep two terminals open: one for <code>nodemon app.js</code>, one for frontend</li>
                         <li>Use <code>nodemon app.js</code> during development for auto-restart</li>
+                        <li>Press <code>rs</code> in terminal to manually restart anytime</li>
                         <li>Live Server auto-refreshes your HTML when you save</li>
                         <li>Use browser DevTools (F12) to debug API calls</li>
                     </ul>
