@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express.js & MySQL Notes - Day 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        h2 {
+            color: #f5576c;
+            border-bottom: 3px solid #f5576c;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        h3 {
+            color: #f093fb;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        p, li {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        ul, ol {
+            margin-left: 25px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .note strong {
+            color: #856404;
+        }
+        .table-grid {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table-grid th {
+            background: #f5576c;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .table-grid td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .table-grid tr:hover {
+            background: #f9f9f9;
+        }
+        .highlight {
+            background: #ffe6f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        footer {
+            background: #f9f9f9;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Express.js & MySQL Database</h1>
+            <p>Day 2: Database Integration with CRUD Operations</p>
+        </header>
+
+        <div class="content">
+            <!-- Introduction -->
+            <div class="section">
+                <h2>📚 Introduction</h2>
+                <p>Today we'll learn how to connect a backend server to a real MySQL database and perform CRUD operations. This is essential for building real-world applications that store and retrieve data.</p>
+            </div>
+
+            <!-- CRUD Operations -->
+            <div class="section">
+                <h2>🔄 CRUD Operations</h2>
+                <p>CRUD stands for <strong>Create</strong>, <strong>Read</strong>, <strong>Update</strong>, and <strong>Delete</strong>. These are the four basic operations for managing data in a database.</p>
+                
+                <table class="table-grid">
+                    <thead>
+                        <tr>
+                            <th>Operation</th>
+                            <th>HTTP Method</th>
+                            <th>SQL Query</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CREATE</strong></td>
+                            <td>POST</td>
+                            <td>INSERT</td>
+                            <td>Add new data to database</td>
+                        </tr>
+                        <tr>
+                            <td><strong>READ</strong></td>
+                            <td>GET</td>
+                            <td>SELECT</td>
+                            <td>Fetch data from database</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UPDATE</strong></td>
+                            <td>PUT</td>
+                            <td>UPDATE</td>
+                            <td>Modify existing data</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DELETE</strong></td>
+                            <td>DELETE</td>
+                            <td>DELETE</td>
+                            <td>Remove data from database</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- MySQL Connection -->
+            <div class="section">
+                <h2>🗄️ MySQL Connection</h2>
+                <p>First, we need to install the MySQL package and create a connection to the database.</p>
+                
+                <h3>Install MySQL Package:</h3>
+                <pre>npm install mysql2</pre>
+
+                <h3>Create Connection:</h3>
+                <pre><span class="keyword">const</span> mysql = <span class="function">require</span>(<span class="string">"mysql2"</span>)
+
+<span class="keyword">const</span> dbconn = mysql.<span class="function">createConnection</span>({
+    host: <span class="string">"ciacloud.in"</span>,
+    user: <span class="string">"tpuser"</span>,
+    password: <span class="string">"Shift + 5"</span>,
+    database: <span class="string">"tpdb"</span>
+});
+
+dbconn.<span class="function">connect</span>((err) => {
+    <span class="keyword">if</span>(err) console.<span class="function">log</span>(err);
+    console.<span class="function">log</span>(<span class="string">"MySQL connected successfully"</span>);
+});</pre>
+
+                <div class="note">
+                    <strong>💡 Note:</strong> Replace host, user, password, and database with your actual database credentials.
+                </div>
+            </div>
+
+            <!-- CREATE Operation -->
+            <div class="section">
+                <h2>➕ CREATE - POST Request</h2>
+                <p>Insert new data into the database using HTTP POST method.</p>
+
+                <h3>Code Example:</h3>
+                <pre>app.<span class="function">post</span>(<span class="string">"/employee"</span>, (req, res) => {
+
+    <span class="keyword">var</span> employee_name = req.body.name
+
+    sql = <span class="string">`INSERT INTO employee (id, name, department, salary) 
+           VALUES (NULL, '${employee_name}', 'IT', '24000')`</span>
+
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        console.<span class="function">log</span>(result);
+    })
+
+    res.<span class="function">send</span>(<span class="string">"Employee added successfully"</span>)
+})</pre>
+
+                <div class="note">
+                    <strong>💡 Key Points:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>req.body.name</code> - Gets data sent from frontend</li>
+                        <li><code>NULL</code> - Auto-generates ID (auto-increment)</li>
+                        <li><code>dbconn.query()</code> - Executes SQL query</li>
+                        <li><code>res.send()</code> - Sends response back to frontend</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- READ Operation -->
+            <div class="section">
+                <h2>📖 READ - GET Request</h2>
+                <p>Fetch data from the database using HTTP GET method.</p>
+
+                <h3>Code Example:</h3>
+                <pre>app.<span class="function">get</span>(<span class="string">"/employee"</span>, (req, res) => {
+
+    sql = <span class="string">`SELECT * FROM employee ORDER BY id DESC`</span>
+
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        res.<span class="function">send</span>(result);
+    })
+})</pre>
+
+                <div class="note">
+                    <strong>💡 Key Points:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>SELECT *</code> - Gets all columns from table</li>
+                        <li><code>ORDER BY id DESC</code> - Sorts by ID in descending order (latest first)</li>
+                        <li><code>result</code> - Contains all data fetched from database</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- UPDATE Operation -->
+            <div class="section">
+                <h2>✏️ UPDATE - PUT Request</h2>
+                <p>Update existing data in the database using HTTP PUT method.</p>
+
+                <h3>Code Example:</h3>
+                <pre>app.<span class="function">put</span>(<span class="string">"/employee"</span>, (req, res) => {
+
+    <span class="keyword">var</span> id = req.body.id
+    <span class="keyword">var</span> salary = req.body.salary
+
+    sql = <span class="string">`UPDATE employee SET salary = '${salary}' WHERE id = ${id}`</span>
+
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        console.<span class="function">log</span>(result);
+    })
+
+    res.<span class="function">send</span>(<span class="string">"Employee updated successfully"</span>)
+})</pre>
+
+                <div class="note">
+                    <strong>💡 Key Points:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>SET salary</code> - Updates the salary column</li>
+                        <li><code>WHERE id</code> - Targets specific employee by ID</li>
+                        <li>Always specify WHERE condition to avoid updating all rows!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- DELETE Operation -->
+            <div class="section">
+                <h2>🗑️ DELETE - DELETE Request</h2>
+                <p>Remove data from the database using HTTP DELETE method.</p>
+
+                <h3>Code Example:</h3>
+                <pre>app.<span class="function">delete</span>(<span class="string">"/employee/:id"</span>, (req, res) => {
+
+    <span class="keyword">var</span> id = req.params.id;
+
+    sql = <span class="string">`DELETE FROM employee WHERE id = ${id}`</span>
+
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        res.<span class="function">send</span>(result);
+    })
+})</pre>
+
+                <div class="note">
+                    <strong>💡 Key Points:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>:id</code> - Dynamic parameter in URL</li>
+                        <li><code>req.params.id</code> - Gets ID from URL</li>
+                        <li><code>WHERE id</code> - Deletes specific employee by ID</li>
+                        <li>Always specify WHERE condition to avoid deleting all data!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Middleware -->
+            <div class="section">
+                <h2>⚙️ Middleware</h2>
+                <p>Middleware is a function that processes requests before they reach the route handler. It's useful for logging, authentication, validation, etc.</p>
+
+                <h3>Types of Middleware:</h3>
+
+                <h3>1. Global Middleware (Runs for all routes):</h3>
+                <pre><span class="keyword">const</span> middleware = (req, res, next) => {
+    console.<span class="function">log</span>(<span class="keyword">new</span> <span class="function">Date</span>() + <span class="string">": I am from middleware"</span>);
+    <span class="function">next</span>()
+}
+
+app.<span class="function">use</span>(middleware)</pre>
+
+                <h3>2. Route-specific Middleware (Runs for specific route):</h3>
+                <pre>app.<span class="function">get</span>(<span class="string">"/users"</span>, middleware, (req, res) => {
+    res.<span class="function">send</span>(users_data)
+})</pre>
+
+                <div class="note">
+                    <strong>💡 Key Points:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><code>next()</code> - Passes control to next middleware or route handler</li>
+                        <li><code>app.use()</code> - Applies middleware to all routes below it</li>
+                        <li>Middleware executes in the order it's defined</li>
+                        <li>Common middleware: CORS, JSON parser, authentication</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Important Middleware -->
+            <div class="section">
+                <h2>📌 Important Middleware in Our Code</h2>
+
+                <h3>1. CORS Middleware:</h3>
+                <pre>app.<span class="function">use</span>(cors())
+<span class="comment">// Allows frontend to communicate with backend from different ports</span></pre>
+
+                <h3>2. JSON Parser Middleware:</h3>
+                <pre>app.<span class="function">use</span>(express.<span class="function">json</span>())
+<span class="comment">// Converts incoming JSON data to JavaScript object (req.body)</span></pre>
+
+                <div class="note">
+                    <strong>💡 Without these middleware:</strong>
+                    <ul style="margin-top: 10px;">
+                        <li>CORS blocked: Frontend can't access backend</li>
+                        <li>JSON parser missing: <code>req.body</code> will be undefined</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Database Diagram -->
+            <div class="section">
+                <h2>📊 Employee Table Structure</h2>
+                <table class="table-grid">
+                    <thead>
+                        <tr>
+                            <th>Column Name</th>
+                            <th>Data Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>id</strong></td>
+                            <td>INT (Auto Increment)</td>
+                            <td>Unique identifier for each employee</td>
+                        </tr>
+                        <tr>
+                            <td><strong>name</strong></td>
+                            <td>VARCHAR(100)</td>
+                            <td>Employee name</td>
+                        </tr>
+                        <tr>
+                            <td><strong>department</strong></td>
+                            <td>VARCHAR(50)</td>
+                            <td>Department (e.g., IT, HR)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>salary</strong></td>
+                            <td>INT</td>
+                            <td>Employee salary</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Create Table SQL:</h3>
+                <pre><span class="keyword">CREATE TABLE</span> employee (
+    id <span class="keyword">INT</span> AUTO_INCREMENT PRIMARY KEY,
+    name <span class="keyword">VARCHAR</span>(100),
+    department <span class="keyword">VARCHAR</span>(50),
+    salary <span class="keyword">INT</span>
+);</pre>
+            </div>
+
+            <!-- Complete Code -->
+            <div class="section">
+                <h2>💻 Complete Code Example</h2>
+                <pre><span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">"express"</span>)
+<span class="keyword">const</span> app = <span class="function">express</span>()
+<span class="keyword">const</span> cors = <span class="function">require</span>(<span class="string">"cors"</span>)
+<span class="keyword">const</span> mysql = <span class="function">require</span>(<span class="string">"mysql2"</span>)
+
+app.<span class="function">use</span>(cors())
+app.<span class="function">use</span>(express.<span class="function">json</span>())
+
+<span class="keyword">const</span> dbconn = mysql.<span class="function">createConnection</span>({
+    host: <span class="string">"ciacloud.in"</span>,
+    user: <span class="string">"tpuser"</span>,
+    password: <span class="string">"Shift + 5"</span>,
+    database: <span class="string">"tpdb"</span>
+});
+
+dbconn.<span class="function">connect</span>((err) => {
+    <span class="keyword">if</span>(err) console.<span class="function">log</span>(err);
+    console.<span class="function">log</span>(<span class="string">"MySQL connected successfully"</span>);
+});
+
+<span class="comment">// CREATE</span>
+app.<span class="function">post</span>(<span class="string">"/employee"</span>, (req, res) => {
+    <span class="keyword">var</span> employee_name = req.body.name
+    sql = <span class="string">`INSERT INTO employee (id, name, department, salary) VALUES (NULL, '${employee_name}', 'IT', '24000')`</span>
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        console.<span class="function">log</span>(result);
+    })
+    res.<span class="function">send</span>(<span class="string">"Employee added successfully"</span>)
+})
+
+<span class="comment">// READ</span>
+app.<span class="function">get</span>(<span class="string">"/employee"</span>, (req, res) => {
+    sql = <span class="string">`SELECT * FROM employee ORDER BY id DESC`</span>
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        res.<span class="function">send</span>(result);
+    })
+})
+
+<span class="comment">// UPDATE</span>
+app.<span class="function">put</span>(<span class="string">"/employee"</span>, (req, res) => {
+    <span class="keyword">var</span> id = req.body.id
+    <span class="keyword">var</span> salary = req.body.salary
+    sql = <span class="string">`UPDATE employee SET salary = '${salary}' WHERE id = ${id}`</span>
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        console.<span class="function">log</span>(result);
+    })
+    res.<span class="function">send</span>(<span class="string">"Employee updated successfully"</span>)
+})
+
+<span class="comment">// DELETE</span>
+app.<span class="function">delete</span>(<span class="string">"/employee/:id"</span>, (req, res) => {
+    <span class="keyword">var</span> id = req.params.id;
+    sql = <span class="string">`DELETE FROM employee WHERE id = ${id}`</span>
+    dbconn.<span class="function">query</span>(sql, (err, result) => {
+        res.<span class="function">send</span>(result);
+    })
+})
+
+app.<span class="function">listen</span>(3000, () => {
+    console.<span class="function">log</span>(<span class="string">"Serving on port 3000"</span>);
+})</pre>
+            </div>
+
+            <!-- Quick Summary -->
+            <div class="section">
+                <h2>✅ Quick Summary</h2>
+                <ol>
+                    <li><strong>Install packages:</strong> <code>npm install express cors mysql2</code></li>
+                    <li><strong>Connect to database:</strong> Create connection with credentials</li>
+                    <li><strong>POST:</strong> Send data to database using INSERT query</li>
+                    <li><strong>GET:</strong> Fetch data from database using SELECT query</li>
+                    <li><strong>PUT:</strong> Update data using UPDATE query with WHERE condition</li>
+                    <li><strong>DELETE:</strong> Remove data using DELETE query with WHERE condition</li>
+                    <li><strong>Middleware:</strong> Functions that process requests before routes</li>
+                    <li><strong>Always use WHERE:</strong> Avoid updating or deleting all data!</li>
+                </ol>
+            </div>
+
+            <!-- Tips for Students -->
+            <div class="section">
+                <h2>💡 Pro Tips for Students</h2>
+                <ul>
+                    <li><strong>Always add WHERE clause:</strong> Prevents accidental data loss</li>
+                    <li><strong>Test with Postman:</strong> Use Postman app to test API endpoints</li>
+                    <li><strong>Check console logs:</strong> Use <code>console.log()</code> to debug</li>
+                    <li><strong>Use correct HTTP methods:</strong> POST (create), GET (read), PUT (update), DELETE (delete)</li>
+                    <li><strong>Validate input data:</strong> Never trust user data directly</li>
+                    <li><strong>Use :id in URL:</strong> For dynamic routes like /employee/:id</li>
+                    <li><strong>Run with nodemon:</strong> Use <code>nodemon app.js</code> for automatic restart</li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>📚 Happy Learning! Master CRUD operations and build amazing full-stack applications!</p>
+        </footer>
+    </div>
+</body>
+</html>
