@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Headers & Methods Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        nav button {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        nav button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        nav button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .method-card, .header-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .method-card:hover, .header-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .method-name, .header-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-top: 5px;
+        }
+
+        .badge.safe {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge.idempotent {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .badge.request {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge.response {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge.security {
+            background: #e2d3f4;
+            color: #5a2a82;
+        }
+
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        .example {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box strong {
+            color: #2196F3;
+        }
+
+        .diagram-container {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .diagram-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .flow-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            min-width: 150px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        .flow-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .flow-box.client {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .flow-box.server {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .layer-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .layer {
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .layer:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .layer-name {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .layer-description {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .cors-diagram {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .cors-box {
+            background: #f8f9fa;
+            border: 3px solid #667eea;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .cors-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .cors-arrow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cors-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cors-arrow-line {
+            font-size: 2.5em;
+            color: #667eea;
+        }
+
+        .cors-arrow-label {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .cors-diagram {
+                grid-template-columns: 1fr;
+            }
+            
+            .cors-arrow-line {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📡 HTTP Reference Guide</h1>
+            <p>Complete reference for HTTP Methods and Headers</p>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" data-section="methods">HTTP Methods</button>
+            <button class="nav-btn" data-section="request-headers">Request Headers</button>
+            <button class="nav-btn" data-section="response-headers">Response Headers</button>
+            <button class="nav-btn" data-section="security-headers">Security Headers</button>
+            <button class="nav-btn" data-section="diagrams">Architecture Diagrams</button>
+            <button class="nav-btn" data-section="concepts">Key Concepts</button>
+        </nav>
+
+        <div class="content">
+            <!-- HTTP Methods Section -->
+            <div id="methods" class="section active">
+                <h2>HTTP Methods</h2>
+                <p>HTTP methods (verbs) define the action to be performed on a resource.</p>
+
+                <div class="method-card">
+                    <div class="method-name">GET</div>
+                    <span class="badge safe">Safe</span>
+                    <span class="badge idempotent">Idempotent</span>
+                    <p>Retrieves data from the server without modifying anything. Can be cached and bookmarked.</p>
+                    <div class="example">GET /api/users/123</div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">POST</div>
+                    <p>Submits data to create a new resource. Not idempotent - multiple calls create multiple resources.</p>
+                    <div class="example">POST /api/users<br>Body: {"name": "John", "email": "john@example.com"}</div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">PUT</div>
+                    <span class="badge idempotent">Idempotent</span>
+                    <p>Updates or replaces an entire resource. Sends complete resource data.</p>
+                    <div class="example">PUT /api/users/123<br>Body: {"name": "John Doe", "email": "john@example.com", "age": 30}</div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">PATCH</div>
+                    <p>Partially updates a resource. Only sends changed fields.</p>
+                    <div class="example">PATCH /api/users/123<br>Body: {"email": "newemail@example.com"}</div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">DELETE</div>
+                    <span class="badge idempotent">Idempotent</span>
+                    <p>Removes a resource from the server.</p>
+                    <div class="example">DELETE /api/users/123</div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">HEAD</div>
+                    <span class="badge safe">Safe</span>
+                    <span class="badge idempotent">Idempotent</span>
+                    <p>Same as GET but returns only headers without the body. Useful for checking resource existence.</p>
+                    <div class="example">HEAD /api/users/123</div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-name">OPTIONS</div>
+                    <span class="badge safe">Safe</span>
+                    <span class="badge idempotent">Idempotent</span>
+                    <p>Returns supported HTTP methods for a resource. Used in CORS preflight requests.</p>
+                    <div class="example">OPTIONS /api/users</div>
+                </div>
+            </div>
+
+            <!-- Request Headers Section -->
+            <div id="request-headers" class="section">
+                <h2>Common Request Headers</h2>
+
+                <div class="header-card">
+                    <div class="header-name">Accept</div>
+                    <span class="badge request">Request</span>
+                    <p>Specifies media types the client can handle.</p>
+                    <div class="example">Accept: application/json, text/html</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Authorization</div>
+                    <span class="badge request">Request</span>
+                    <p>Contains authentication credentials for accessing protected resources.</p>
+                    <div class="example">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Content-Type</div>
+                    <span class="badge request">Request</span>
+                    <p>Indicates the media type of the request body.</p>
+                    <div class="example">Content-Type: application/json</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Content-Length</div>
+                    <span class="badge request">Request</span>
+                    <p>Size of the request body in bytes.</p>
+                    <div class="example">Content-Length: 348</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Cookie</div>
+                    <span class="badge request">Request</span>
+                    <p>Sends stored cookies to the server.</p>
+                    <div class="example">Cookie: session_id=abc123; user_id=456</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">User-Agent</div>
+                    <span class="badge request">Request</span>
+                    <p>Information about the client software making the request.</p>
+                    <div class="example">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)...</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Host</div>
+                    <span class="badge request">Request</span>
+                    <p>Domain name of the server (required in HTTP/1.1).</p>
+                    <div class="example">Host: www.example.com</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Referer</div>
+                    <span class="badge request">Request</span>
+                    <p>URL of the previous page that linked to the current request.</p>
+                    <div class="example">Referer: https://www.google.com/</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Accept-Encoding</div>
+                    <span class="badge request">Request</span>
+                    <p>Compression algorithms the client supports.</p>
+                    <div class="example">Accept-Encoding: gzip, deflate, br</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Accept-Language</div>
+                    <span class="badge request">Request</span>
+                    <p>Preferred languages for the response.</p>
+                    <div class="example">Accept-Language: en-US, en;q=0.9, es;q=0.8</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Origin</div>
+                    <span class="badge request">Request</span>
+                    <p>Origin of the cross-origin request (used in CORS).</p>
+                    <div class="example">Origin: https://example.com</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Cache-Control</div>
+                    <span class="badge request">Request</span>
+                    <p>Directives for caching mechanisms.</p>
+                    <div class="example">Cache-Control: no-cache, no-store</div>
+                </div>
+            </div>
+
+            <!-- Response Headers Section -->
+            <div id="response-headers" class="section">
+                <h2>Common Response Headers</h2>
+
+                <div class="header-card">
+                    <div class="header-name">Content-Type</div>
+                    <span class="badge response">Response</span>
+                    <p>Media type of the response body.</p>
+                    <div class="example">Content-Type: application/json; charset=utf-8</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Content-Length</div>
+                    <span class="badge response">Response</span>
+                    <p>Size of the response body in bytes.</p>
+                    <div class="example">Content-Length: 1024</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Set-Cookie</div>
+                    <span class="badge response">Response</span>
+                    <p>Sends cookies to be stored on the client.</p>
+                    <div class="example">Set-Cookie: sessionId=xyz789; HttpOnly; Secure; SameSite=Strict</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Cache-Control</div>
+                    <span class="badge response">Response</span>
+                    <p>Caching policies for the response.</p>
+                    <div class="example">Cache-Control: max-age=3600, public</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">ETag</div>
+                    <span class="badge response">Response</span>
+                    <p>Identifier for a specific version of a resource (used for caching).</p>
+                    <div class="example">ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Expires</div>
+                    <span class="badge response">Response</span>
+                    <p>Date/time when the response is considered stale.</p>
+                    <div class="example">Expires: Wed, 21 Oct 2025 07:28:00 GMT</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Last-Modified</div>
+                    <span class="badge response">Response</span>
+                    <p>Date when the resource was last modified.</p>
+                    <div class="example">Last-Modified: Tue, 15 Nov 2024 12:45:26 GMT</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Location</div>
+                    <span class="badge response">Response</span>
+                    <p>Used in redirects (3xx) or to indicate new resource location (201).</p>
+                    <div class="example">Location: /users/456</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Server</div>
+                    <span class="badge response">Response</span>
+                    <p>Information about the server software.</p>
+                    <div class="example">Server: nginx/1.18.0</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Access-Control-Allow-Origin</div>
+                    <span class="badge response">Response</span>
+                    <p>CORS: Specifies which origins can access the resource.</p>
+                    <div class="example">Access-Control-Allow-Origin: https://example.com</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Access-Control-Allow-Methods</div>
+                    <span class="badge response">Response</span>
+                    <p>CORS: Specifies allowed HTTP methods.</p>
+                    <div class="example">Access-Control-Allow-Methods: GET, POST, PUT, DELETE</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">WWW-Authenticate</div>
+                    <span class="badge response">Response</span>
+                    <p>Authentication method required (sent with 401 status).</p>
+                    <div class="example">WWW-Authenticate: Bearer realm="api"</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Content-Encoding</div>
+                    <span class="badge response">Response</span>
+                    <p>Compression applied to the response body.</p>
+                    <div class="example">Content-Encoding: gzip</div>
+                </div>
+            </div>
+
+            <!-- Security Headers Section -->
+            <div id="security-headers" class="section">
+                <h2>Security Headers</h2>
+
+                <div class="header-card">
+                    <div class="header-name">Strict-Transport-Security (HSTS)</div>
+                    <span class="badge security">Security</span>
+                    <p>Forces browsers to use HTTPS connections only.</p>
+                    <div class="example">Strict-Transport-Security: max-age=31536000; includeSubDomains</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">X-Content-Type-Options</div>
+                    <span class="badge security">Security</span>
+                    <p>Prevents browsers from MIME-sniffing a response away from the declared content-type.</p>
+                    <div class="example">X-Content-Type-Options: nosniff</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">X-Frame-Options</div>
+                    <span class="badge security">Security</span>
+                    <p>Protects against clickjacking attacks by controlling whether a page can be displayed in a frame.</p>
+                    <div class="example">X-Frame-Options: DENY<br>X-Frame-Options: SAMEORIGIN</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">Content-Security-Policy (CSP)</div>
+                    <span class="badge security">Security</span>
+                    <p>Controls which resources can be loaded to prevent XSS and other attacks.</p>
+                    <div class="example">Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'</div>
+                </div>
+
+                <div class="header-card">
+                    <div class="header-name">X-XSS-Protection</div>
+                    <span class="badge security">Security</span>
+                    <p>Legacy header to enable XSS filtering (mostly deprecated in favor of CSP).</p>
+                    <div class="example">X-XSS-Protection: 1; mode=block</div>
+                </div>
+            </div>
+
+            <!-- Architecture Diagrams Section -->
+            <div id="diagrams" class="section">
+                <h2>Architecture Diagrams</h2>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">📡 HTTP Request/Response Cycle</div>
+                    <div class="flow-diagram">
+                        <div class="flow-box client">
+                            <div>Client</div>
+                            <div style="font-size: 0.8em; margin-top: 5px;">Browser/App</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-box">
+                            <div>HTTP Request</div>
+                            <div style="font-size: 0.8em; margin-top: 5px;">Method + Headers</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-box server">
+                            <div>Server</div>
+                            <div style="font-size: 0.8em; margin-top: 5px;">API/Web Server</div>
+                        </div>
+                    </div>
+                    <div class="flow-diagram">
+                        <div class="flow-box server">
+                            <div>Server</div>
+                            <div style="font-size: 0.8em; margin-top: 5px;">Processes Request</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-box">
+                            <div>HTTP Response</div>
+                            <div style="font-size: 0.8em; margin-top: 5px;">Status + Headers + Body</div>
+                        </div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-box client">
+                            <div>Client</div>
+                            <div style="font-size: 0.8em; margin-top: 5px;">Receives Data</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">🔐 CORS (Cross-Origin Resource Sharing)</div>
+                    <div class="cors-diagram">
+                        <div class="cors-box">
+                            <h4>🌐 Browser</h4>
+                            <p style="margin-top: 10px; font-size: 0.9em;">example.com</p>
+                        </div>
+                        <div class="cors-arrow-container">
+                            <div class="cors-arrow">
+                                <div class="cors-arrow-label">1. Preflight (OPTIONS)</div>
+                                <div class="cors-arrow-line">→</div>
+                            </div>
+                            <div class="cors-arrow">
+                                <div class="cors-arrow-line">←</div>
+                                <div class="cors-arrow-label">2. Allow Headers</div>
+                            </div>
+                            <div class="cors-arrow">
+                                <div class="cors-arrow-label">3. Actual Request</div>
+                                <div class="cors-arrow-line">→</div>
+                            </div>
+                            <div class="cors-arrow">
+                                <div class="cors-arrow-line">←</div>
+                                <div class="cors-arrow-label">4. Response + CORS Headers</div>
+                            </div>
+                        </div>
+                        <div class="cors-box">
+                            <h4>🖥️ API Server</h4>
+                            <p style="margin-top: 10px; font-size: 0.9em;">api.different.com</p>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <strong>Key CORS Headers:</strong>
+                        <p>• Access-Control-Allow-Origin: Specifies allowed origins<br>
+                        • Access-Control-Allow-Methods: Specifies allowed HTTP methods<br>
+                        • Access-Control-Allow-Headers: Specifies allowed request headers<br>
+                        • Access-Control-Max-Age: How long preflight results can be cached</p>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">📚 HTTP Protocol Layers</div>
+                    <div class="layer-diagram">
+                        <div class="layer" style="background: linear-gradient(to right, #667eea, #764ba2);">
+                            <div class="layer-name">Application Layer</div>
+                            <div class="layer-description">HTTP/HTTPS, REST APIs, Web Services</div>
+                        </div>
+                        <div class="layer" style="background: linear-gradient(to right, #11998e, #38ef7d);">
+                            <div class="layer-name">Transport Layer</div>
+                            <div class="layer-description">TCP (Transmission Control Protocol)</div>
+                        </div>
+                        <div class="layer" style="background: linear-gradient(to right, #ee0979, #ff6a00);">
+                            <div class="layer-name">Network Layer</div>
+                            <div class="layer-description">IP (Internet Protocol)</div>
+                        </div>
+                        <div class="layer" style="background: linear-gradient(to right, #f093fb, #f5576c);">
+                            <div class="layer-name">Link Layer</div>
+                            <div class="layer-description">Ethernet, Wi-Fi, Physical Hardware</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">🔄 RESTful API Architecture</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0;">
+                        <div class="method-card">
+                            <div class="method-name">GET /users</div>
+                            <p><strong>Action:</strong> List all users</p>
+                            <p><strong>Response:</strong> 200 OK + Array of users</p>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-name">GET /users/:id</div>
+                            <p><strong>Action:</strong> Get single user</p>
+                            <p><strong>Response:</strong> 200 OK + User object</p>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-name">POST /users</div>
+                            <p><strong>Action:</strong> Create new user</p>
+                            <p><strong>Response:</strong> 201 Created + New user</p>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-name">PUT /users/:id</div>
+                            <p><strong>Action:</strong> Update entire user</p>
+                            <p><strong>Response:</strong> 200 OK + Updated user</p>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-name">PATCH /users/:id</div>
+                            <p><strong>Action:</strong> Partial user update</p>
+                            <p><strong>Response:</strong> 200 OK + Updated user</p>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-name">DELETE /users/:id</div>
+                            <p><strong>Action:</strong> Delete user</p>
+                            <p><strong>Response:</strong> 204 No Content</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">🔒 HTTPS/TLS Handshake</div>
+                    <div class="flow-diagram" style="flex-direction: column; align-items: stretch;">
+                        <div class="flow-box client" style="width: 100%;">
+                            1. Client Hello → Server
+                            <div style="font-size: 0.8em; margin-top: 5px;">Supported cipher suites, TLS version</div>
+                        </div>
+                        <div class="flow-arrow" style="transform: rotate(90deg); margin: 10px 0;">→</div>
+                        <div class="flow-box server" style="width: 100%;">
+                            2. Server Hello ← Client
+                            <div style="font-size: 0.8em; margin-top: 5px;">Selected cipher, SSL certificate</div>
+                        </div>
+                        <div class="flow-arrow" style="transform: rotate(90deg); margin: 10px 0;">→</div>
+                        <div class="flow-box client" style="width: 100%;">
+                            3. Client verifies certificate
+                            <div style="font-size: 0.8em; margin-top: 5px;">Validates server identity</div>
+                        </div>
+                        <div class="flow-arrow" style="transform: rotate(90deg); margin: 10px 0;">→</div>
+                        <div class="flow-box" style="width: 100%; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            4. Encrypted Session Established
+                            <div style="font-size: 0.8em; margin-top: 5px;">Secure HTTP communication begins</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="diagram-title">📊 HTTP Status Code Categories</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                        <div style="background: #e3f2fd; border-left: 5px solid #2196F3; padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #2196F3; margin-bottom: 10px;">1xx Informational</h4>
+                            <p style="font-size: 0.9em;">100 Continue<br>101 Switching Protocols</p>
+                        </div>
+                        <div style="background: #e8f5e9; border-left: 5px solid #4CAF50; padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #4CAF50; margin-bottom: 10px;">2xx Success</h4>
+                            <p style="font-size: 0.9em;">200 OK<br>201 Created<br>204 No Content</p>
+                        </div>
+                        <div style="background: #fff3e0; border-left: 5px solid #FF9800; padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #FF9800; margin-bottom: 10px;">3xx Redirection</h4>
+                            <p style="font-size: 0.9em;">301 Moved Permanently<br>302 Found<br>304 Not Modified</p>
+                        </div>
+                        <div style="background: #ffebee; border-left: 5px solid #f44336; padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #f44336; margin-bottom: 10px;">4xx Client Error</h4>
+                            <p style="font-size: 0.9em;">400 Bad Request<br>401 Unauthorized<br>404 Not Found</p>
+                        </div>
+                        <div style="background: #fce4ec; border-left: 5px solid #e91e63; padding: 20px; border-radius: 8px;">
+                            <h4 style="color: #e91e63; margin-bottom: 10px;">5xx Server Error</h4>
+                            <p style="font-size: 0.9em;">500 Internal Server Error<br>502 Bad Gateway<br>503 Service Unavailable</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Concepts Section -->
+            <div id="concepts" class="section">
+                <h2>Key Concepts</h2>
+
+                <div class="info-box">
+                    <strong>Idempotency</strong>
+                    <p>Multiple identical requests have the same effect as a single request. GET, PUT, DELETE, HEAD, and OPTIONS are idempotent. POST and PATCH are not idempotent.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Safety</strong>
+                    <p>A safe method doesn't modify server state. GET, HEAD, and OPTIONS are safe methods - they only retrieve information without causing side effects.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>CORS (Cross-Origin Resource Sharing)</strong>
+                    <p>A mechanism that uses HTTP headers to allow a web application running at one origin to access resources from a different origin. Key headers include Access-Control-Allow-Origin, Access-Control-Allow-Methods, and Access-Control-Allow-Headers.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Custom Headers</strong>
+                    <p>Applications can define custom headers for specific purposes. Traditionally prefixed with "X-" (though this convention is deprecated), such as X-API-Key, X-Request-ID, or X-Custom-Data.</p>
+                </div>
+
+                <div class="info-box">
+                    <strong>Status Codes</strong>
+                    <p>HTTP status codes indicate the result of a request:
+                    <br>• 1xx: Informational
+                    <br>• 2xx: Success (200 OK, 201 Created)
+                    <br>• 3xx: Redirection (301 Moved Permanently, 302 Found)
+                    <br>• 4xx: Client Error (400 Bad Request, 401 Unauthorized, 404 Not Found)
+                    <br>• 5xx: Server Error (500 Internal Server Error, 503 Service Unavailable)</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>HTTP Reference Guide | Complete documentation for HTTP Methods and Headers</p>
+        </footer>
+    </div>
+
+    <script>
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const sections = document.querySelectorAll('.section');
+
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetSection = button.getAttribute('data-section');
+                
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                document.getElementById(targetSection).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
